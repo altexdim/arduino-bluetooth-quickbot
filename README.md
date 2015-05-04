@@ -17,13 +17,13 @@ Robot is based on SparkFun RedBot Kit
 Mainboard is SparkFun RedBot Mainboard (Arduino UNO compatible)
     https://www.sparkfun.com/products/12097.
 
+Android Bluetooth Joystick application to handle QuickBot via Bluetooth module:
+    https://github.com/altexdim/android-bluetooth-joystick
+
 QuickBot originated from coursera course "Control of Mobile Robots": 
     https://www.coursera.org/course/conrob
 Original QuickBot site and repository:
     http://o-botics.org/robots/quickbot/mooc/v2/
-
-Android Bluetooth Joystick application to handle QuickBot via Bluetooth module:
-    https://github.com/altexdim/android-bluetooth-joystick
 
 Photos and video
 ----------------------------------
@@ -50,3 +50,6 @@ Original QuickBot site:
 
 QuickBot repository:
     https://github.com/o-botics
+
+Android Bluetooth Joystick application:
+    https://github.com/altexdim/android-bluetooth-joystick
