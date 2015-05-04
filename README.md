@@ -23,6 +23,14 @@ Original QuickBot site and repository:
 Android Bluetooth Joystick application to handle QuickBot via Bluetooth module:
     https://github.com/altexdim/android-bluetooth-joystick
 
+Photos and video
+==================================
+    Photos are in the folder /photos of this repository.
+
+    Video of the robot moving around while i'm controlling it with
+Android Bluetooth Joystick application:
+    https://drive.google.com/file/d/0B4F2-uZsSusnc2JXcFBnS0lNSzg
+
 Credits
 ==================================
 CMake project for Arduino (original project):
