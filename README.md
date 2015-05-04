@@ -16,7 +16,7 @@ source code is ugly, it will be refactored if i will
 find enough free time for that. But it totaly works.
 
 Robot is based on SparkFun RedBot Kit  
-    https://www.sparkfun.com/products/12697.
+    https://www.sparkfun.com/products/12697.  
 Mainboard is SparkFun RedBot Mainboard (Arduino UNO compatible)  
     https://www.sparkfun.com/products/12097.
 
