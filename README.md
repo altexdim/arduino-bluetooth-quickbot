@@ -11,7 +11,7 @@ Instead of WiFi module i use Bluetooth module HC-06.
 It uses the same commands as original QuickBot, but instead of TCP/IP connection  
 it uses serial connection.
 
-Disclaimer: this is proof of concept alfa release,  
+*Disclaimer*: this is proof of concept alfa release,  
 source code is ugly, it will be refactored if i will  
 find enough free time for that. But it totaly works.
 
