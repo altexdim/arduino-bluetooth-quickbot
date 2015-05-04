@@ -20,6 +20,9 @@ QuickBot originated from coursera course "Control of Mobile Robots":
 Original QuickBot site and repository:
     http://o-botics.org/robots/quickbot/mooc/v2/
 
+Android Bluetooth Joystick application to handle QuickBot via Bluetooth module:
+    https://github.com/altexdim/android-bluetooth-joystick
+
 Credits
 ==================================
 CMake project for Arduino (original project):
