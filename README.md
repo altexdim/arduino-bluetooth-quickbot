@@ -1,4 +1,4 @@
-Arduino QuickBot 
+Arduino Bluetooth QuickBot 
 ==================================
 
 This is QuickBot implementation on the Arduino platform.
