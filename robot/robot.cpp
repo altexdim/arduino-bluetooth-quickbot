@@ -321,24 +321,26 @@ void processButton() {
 
 void processSerial() {
     while (Serial.available()) {
-        int incomingChar;
-
-        incomingChar = Serial.read();
+        int incomingChar = Serial.read();
         if (incomingChar == -1) {
             continue;
         }
 
         if (incomingChar == '$') {
             commandBuffer = "";
-        } else if (incomingChar == '*') {
+            continue;
+        }
+
+        if (incomingChar == '*') {
             String outputBuffer;
             int result = execudeCommand(commandBuffer, outputBuffer);
             if (result) {
                 Serial.println(outputBuffer);
             }
-        } else {
-            commandBuffer += (char)incomingChar;
+            continue;
         }
+
+        commandBuffer += (char)incomingChar;
     }
 }
 
