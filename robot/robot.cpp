@@ -104,10 +104,7 @@ unsigned int laserIndex = 0;
 bool drive = false;
 bool btnPressed = false;
 
-int incomingChar;
-
 String commandBuffer;
-String outputBuffer;
 
 int leftWheelPwm = 0;
 int rightWheelPwm = 0;
@@ -324,6 +321,8 @@ void processButton() {
 
 void processSerial() {
     while (Serial.available()) {
+        int incomingChar;
+
         incomingChar = Serial.read();
         if (incomingChar == -1) {
             continue;
@@ -332,6 +331,7 @@ void processSerial() {
         if (incomingChar == '$') {
             commandBuffer = "";
         } else if (incomingChar == '*') {
+            String outputBuffer;
             int result = execudeCommand(commandBuffer, outputBuffer);
             if (result) {
                 Serial.println(outputBuffer);
