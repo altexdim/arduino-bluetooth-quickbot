@@ -322,7 +322,7 @@ void processButton() {
     }
 }
 
-void processCommands() {
+void processSerial() {
     while (Serial.available()) {
         incomingChar = Serial.read();
         if (incomingChar == -1) {
@@ -428,6 +428,30 @@ void countVelocity() {
     }
 }
 
+void printDebugInfo() {
+    if (debug & 1) {
+        Serial.print("left=");
+        Serial.print(leftCounter);
+        Serial.print(" right=");
+        Serial.print(rightCounter);
+        Serial.print(" loops=");
+        Serial.print(perf);
+
+        Serial.print(" l_vel=");
+        Serial.print(leftWheelVelocity);
+        Serial.print(" r_vel=");
+        Serial.print(rightWheelVelocity);
+
+        for (int i = 0; i < LASER_SENSORS_COUNT; i++) {
+            Serial.print("\tS");
+            Serial.print(i);
+            Serial.print("=");
+            Serial.print(analogSensorValueAvg[i]);
+        }
+        Serial.println();
+    }
+}
+
 void countPerformance() {
     loopCount++;
 
@@ -453,35 +477,17 @@ void countPerformance() {
     }
 }
 
-void printDebugInfo() {
-    if (debug & 1) {
-        Serial.print("left=");
-        Serial.print(leftCounter);
-        Serial.print(" right=");
-        Serial.print(rightCounter);
-        Serial.print(" loops=");
-        Serial.print(perf);
-
-        Serial.print(" l_vel=");
-        Serial.print(leftWheelVelocity);
-        Serial.print(" r_vel=");
-        Serial.print(rightWheelVelocity);
-
-        for (int i = 0; i < LASER_SENSORS_COUNT; i++) {
-            Serial.print("\tS");
-            Serial.print(i);
-            Serial.print("=");
-            Serial.print(analogSensorValueAvg[i]);
-        }
-        Serial.println();
-    }
-}
-
 void loop(void) {
+    // button
     processButton();
-    processCommands();
+    // serial connection
+    processSerial();
+    // encoders
+    processLeftEncoder();
     processRightEncoder();
-    processIrSensors();
     countVelocity();
+    // ir sensors
+    processIrSensors();
+    // stat and debug
     countPerformance();
 }
