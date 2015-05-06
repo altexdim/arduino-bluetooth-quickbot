@@ -6,10 +6,6 @@ Encoder::Encoder(
 ) :
     _pin(pin)
 {
-}
-
-void Encoder::init() {
-    pinMode(_pin, INPUT);
     _lastReadTime = 0;
     _currentBufferIndex = 0;
     _state = 1;
@@ -18,6 +14,10 @@ void Encoder::init() {
     _velocity = 0;
     _lastVelocityCountTime = 0;
     _lastVelocityCounterValue = 0;
+}
+
+void Encoder::init() {
+    pinMode(_pin, INPUT);
 }
 
 void Encoder::_updateCounter() {
@@ -77,6 +77,7 @@ void Encoder::update() {
 
 void Encoder::reset() {
     _counter = 0;
+    _velocity = 0;
 }
 
 void Encoder::setDirection(int direction) {
