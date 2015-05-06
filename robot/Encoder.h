@@ -2,6 +2,7 @@
 #define ENCODER_H
 
 #include <Arduino.h>
+#include "limits.h"
 
 #define ENCODER_AVG_FILTER_READINGS_COUNT 3
 #define ENCODER_MIN_DELAY_BETWEEN_READ_US 300
@@ -13,16 +14,16 @@
 
 class Encoder {
 private:
-    unsigned int _pin;
     unsigned long _lastReadTime;
+    unsigned long _lastVelocityCountTime;
+    unsigned int _pin;
     unsigned int _currentBufferIndex;
     unsigned int _state;
     long _counter;
-    int _direction;
-    int _values[ENCODER_READ_BUFFER_SIZE];
     long _velocity;
-    unsigned long _lastVelocityCountTime;
     long _lastVelocityCounterValue;
+    int _values[ENCODER_READ_BUFFER_SIZE];
+    int _direction;
 
     void _updateCounter();
     void _updateVelocity();

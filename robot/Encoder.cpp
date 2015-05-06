@@ -1,16 +1,16 @@
 #include "Encoder.h"
-#include "limits.h"
 
 Encoder::Encoder(
     unsigned int pin
 ) :
     _pin(pin)
 {
+    _state = 1;
+    _direction = 1;
+
     _lastReadTime = 0;
     _currentBufferIndex = 0;
-    _state = 1;
     _counter = 0;
-    _direction = 1;
     _velocity = 0;
     _lastVelocityCountTime = 0;
     _lastVelocityCounterValue = 0;
