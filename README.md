@@ -3,7 +3,7 @@ Arduino Bluetooth QuickBot
 
 ![Arduino QuickBot](/photos/20150504_233456.jpg?raw=true "Arduino QuickBot")
 
-This is QuickBot implementation on the Arduino platform.
+This is the QuickBot implementation on the Arduino platform.
 
 Instead of BeagleBone Black i use Arduino UNO.  
 Instead of WiFi module i use Bluetooth module HC-06.

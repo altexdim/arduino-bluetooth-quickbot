@@ -15,10 +15,10 @@
  *
  * ==============================================================================================
  *
- * I use lowpass filter for the encoder readings. Encoders are connected to the analog input potrs.
+ * I use lowpass filter for the encoder readings. Encoders are connected to the analog input ports.
  * Low pass filter takes 3 values and calculates average value.
  *
- * It takes 3 readings from IR sensor and calculates average to filter IR values.
+ * Also there is a filter for IR sensors, it takes 3 readings from IR sensor and calculates average.
  *
  * Debug mode is supported. Debug commands are:
  *     - $DEBUG=1* - enable debug mode
@@ -29,7 +29,7 @@
  * If the program fast enough then you can see more than 1000 loops (1800-1900 loops is very good value).
  * 1000 loops per second means that each loop is as fast as 1 millisecond.
  * 
- * Motors can be started for one send with button connected to pin 12.
+ * Motors can be started for one second with pressing the button connected to pin 12.
  */
 
 #include <Arduino.h>
