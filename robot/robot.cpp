@@ -395,7 +395,7 @@ void loop(void) {
 
     tmpTime = micros();
     if ((sensorReadedTime + SENSOR_READ_DELAY < tmpTime)
-        || (leftReadedTime > tmpTime)
+        || (sensorReadedTime > tmpTime)
     ) {
         laserIndex = sensorReadedCount % LASER_SENSORS_COUNT;
         tmpIndex = (sensorReadedCount / LASER_SENSORS_COUNT) % SENSOR_READ_BUFFER_COUNT;
