@@ -33,61 +33,23 @@
  */
 
 #include <Arduino.h>
+#include "Encoder.h"
+#include "Types.h"
+#include "Settings.h"
+
+Encoder encoders[WHEEL_COUNT] = {Encoder(LEFT_WHEEL_ENCODER_PIN), Encoder(RIGHT_WHEEL_ENCODER_PIN)};
 
 int debug = 0;
 unsigned long perf = 0;
 
-#define LEFT_WHEEL_ENCODER_PIN A4
-#define RIGHT_WHEEL_ENCODER_PIN A5
 #define BTN_PIN 12
-
-#define ANALOG_READ_BUFFER_COUNT 5
-#define ANALOG_READ_DELAY 300
-
-int leftReaded[ANALOG_READ_BUFFER_COUNT];
-unsigned int leftReadedCount = 0;
-unsigned long leftReadedTime = 0;
-long leftCounter = 0;
-int leftEncoderState = 1;
-
-int rightReaded[ANALOG_READ_BUFFER_COUNT];
-unsigned int rightReadedCount = 0;
-unsigned long rightReadedTime = 0;
-long rightCounter = 0;
-int rightEncoderState = 1;
-
-#define WHEEL_VELOCITY_TIME 1000
-#define WHEEL_VELOCITY_SCALER 1000
-long leftWheelVelocity = 0;
-long rightWheelVelocity = 0;
-long leftWheelCounterLast = 0;
-long rightWheelCounterLast = 0;
-unsigned long wheelVelocityTime = 0;
-long leftWheelDirection = 1;
-long rightWheelDirection = 1;
 
 unsigned long tmpTime = 0;
 int tmpValue = 0;
 unsigned int tmpIndex = 0;
 
-#define LOW_VALUE_THRESHOLD 100 * 3
-#define HIGH_VALUE_THRESHOLD 1000 * 3
-
 unsigned long loopCount = 0;
 unsigned long printDelay = 0;
-
-enum WHEEL {
-    WHEEL_LEFT,
-    WHEEL_RIGHT,
-    WHEEL_COUNT
-};
-
-enum WHEEL_PINS {
-    WHEEL_PIN_EN1,
-    WHEEL_PIN_EN2,
-    WHEEL_PIN_PWM,
-    WHEEL_PIN_COUNT
-};
 
 unsigned int wheelPins[WHEEL_COUNT][WHEEL_PIN_COUNT] = {{2, 4, 5},{7, 8, 6}};
 
@@ -118,10 +80,10 @@ void driveWheel(WHEEL wheel, int spd) {
 
     if (wheel == WHEEL_LEFT) {
         leftWheelPwm = spd;
-        leftWheelDirection = spd < 0? -1: 1;
+        encoders[WHEEL_LEFT].setDirection(spd);
     } else {
         rightWheelPwm = spd;
-        rightWheelDirection = spd < 0? -1: 1;
+        encoders[WHEEL_RIGHT].setDirection(spd);
     }
 
     if (spd < 0) {
@@ -138,10 +100,10 @@ void driveWheel(WHEEL wheel, int spd) {
 void stopWheel(WHEEL wheel, bool active) {
     if (wheel == WHEEL_LEFT) {
         leftWheelPwm = 0;
-        leftWheelDirection = 1;
+        encoders[WHEEL_LEFT].setDirection(1);
     } else {
         rightWheelPwm = 0;
-        rightWheelDirection = 1;
+        encoders[WHEEL_RIGHT].setDirection(1);
     }
     digitalWrite(wheelPins[wheel][WHEEL_PIN_EN1], active? HIGH: LOW);
     digitalWrite(wheelPins[wheel][WHEEL_PIN_EN2], active? HIGH: LOW);
@@ -149,10 +111,11 @@ void stopWheel(WHEEL wheel, bool active) {
 }
 
 void setup() {
-    pinMode(BTN_PIN, INPUT_PULLUP);
+    for (int i = WHEEL_LEFT; i < WHEEL_COUNT; i++) {
+        encoders[i].init();
+    }
 
-    pinMode(LEFT_WHEEL_ENCODER_PIN, INPUT);
-    pinMode(RIGHT_WHEEL_ENCODER_PIN, INPUT);
+    pinMode(BTN_PIN, INPUT_PULLUP);
 
     for (int i = 0; i < WHEEL_COUNT; i++) {
         for (int j = 0; j < WHEEL_PIN_COUNT; j++) {
@@ -170,12 +133,8 @@ void setup() {
 }
 
 void resetEncoders() {
-    leftCounter = 0;
-    rightCounter = 0;
-    leftWheelCounterLast = 0;
-    rightWheelCounterLast = 0;
-    leftWheelVelocity = 0;
-    rightWheelVelocity = 0;
+    encoders[WHEEL_LEFT].reset();
+    encoders[WHEEL_RIGHT].reset();
 }
 
 /**
@@ -231,18 +190,18 @@ int execudeCommand(String &input, String &output) {
 
     if (input.equals("ENVEL?")) {
         output.concat("[");
-        output.concat(leftWheelVelocity);
+        output.concat(encoders[WHEEL_LEFT].getVelocity());
         output.concat(", ");
-        output.concat(rightWheelVelocity);
+        output.concat(encoders[WHEEL_RIGHT].getVelocity());
         output.concat("]");
         return 1;
     }
 
     if (input.equals("ENVAL?")) {
         output.concat("[");
-        output.concat(leftCounter);
+        output.concat(encoders[WHEEL_LEFT].getCounter());
         output.concat(", ");
-        output.concat(rightCounter);
+        output.concat(encoders[WHEEL_RIGHT].getCounter());
         output.concat("]");
         return 1;
     }
@@ -344,66 +303,10 @@ void processSerial() {
     }
 }
 
-void processLeftEncoder() {
-    tmpTime = micros();
-    if ((leftReadedTime + ANALOG_READ_DELAY < tmpTime)
-        || (leftReadedTime > tmpTime)
-    ) {
-        tmpValue = analogRead(LEFT_WHEEL_ENCODER_PIN);
-        tmpIndex = leftReadedCount % ANALOG_READ_BUFFER_COUNT;
-        leftReaded[tmpIndex] = tmpValue;
-
-        tmpValue += leftReaded[(ANALOG_READ_BUFFER_COUNT + tmpIndex - 1) % ANALOG_READ_BUFFER_COUNT];
-        tmpValue += leftReaded[(ANALOG_READ_BUFFER_COUNT + tmpIndex - 2) % ANALOG_READ_BUFFER_COUNT];
-
-        if (tmpValue <= LOW_VALUE_THRESHOLD) {
-            if (leftEncoderState) {
-                leftEncoderState = 0;
-            }
-        } else if (tmpValue >= HIGH_VALUE_THRESHOLD) {
-            if (!leftEncoderState) {
-                leftEncoderState = 1;
-                leftCounter+=leftWheelDirection;
-            }
-        }
-
-        leftReadedCount++;
-        leftReadedTime = tmpTime;
-    }
-}
-
-void processRightEncoder() {
-    tmpTime = micros();
-    if ((rightReadedTime + ANALOG_READ_DELAY < tmpTime)
-        || (rightReadedTime > tmpTime)
-    ) {
-        tmpValue = analogRead(RIGHT_WHEEL_ENCODER_PIN);
-        tmpIndex = rightReadedCount % ANALOG_READ_BUFFER_COUNT;
-        rightReaded[tmpIndex] = tmpValue;
-
-        tmpValue += rightReaded[(ANALOG_READ_BUFFER_COUNT + tmpIndex - 1) % ANALOG_READ_BUFFER_COUNT];
-        tmpValue += rightReaded[(ANALOG_READ_BUFFER_COUNT + tmpIndex - 2) % ANALOG_READ_BUFFER_COUNT];
-
-        if (tmpValue <= LOW_VALUE_THRESHOLD) {
-            if (rightEncoderState) {
-                rightEncoderState = 0;
-            }
-        } else if (tmpValue >= HIGH_VALUE_THRESHOLD) {
-            if (!rightEncoderState) {
-                rightEncoderState = 1;
-                rightCounter+=rightWheelDirection;
-            }
-        }
-
-        rightReadedCount++;
-        rightReadedTime = tmpTime;
-    }
-}
-
 void processIrSensors() {
     tmpTime = micros();
     if ((sensorReadedTime + SENSOR_READ_DELAY < tmpTime)
-        || (leftReadedTime > tmpTime)
+        || (sensorReadedTime > tmpTime)
     ) {
         laserIndex = sensorReadedCount % LASER_SENSORS_COUNT;
         tmpIndex = (sensorReadedCount / LASER_SENSORS_COUNT) % SENSOR_READ_BUFFER_COUNT;
@@ -420,29 +323,19 @@ void processIrSensors() {
     }
 }
 
-void countVelocity() {
-    if (wheelVelocityTime + WHEEL_VELOCITY_TIME < millis()) {
-        leftWheelVelocity = (leftCounter - leftWheelCounterLast) * WHEEL_VELOCITY_SCALER / WHEEL_VELOCITY_TIME;
-        leftWheelCounterLast = leftCounter;
-        rightWheelVelocity = (rightCounter - rightWheelCounterLast) * WHEEL_VELOCITY_SCALER / WHEEL_VELOCITY_TIME;
-        rightWheelCounterLast = rightCounter;
-        wheelVelocityTime = millis();
-    }
-}
-
 void printDebugInfo() {
     if (debug & 1) {
         Serial.print("left=");
-        Serial.print(leftCounter);
+        Serial.print(encoders[WHEEL_LEFT].getCounter());
         Serial.print(" right=");
-        Serial.print(rightCounter);
+        Serial.print(encoders[WHEEL_RIGHT].getCounter());
         Serial.print(" loops=");
         Serial.print(perf);
 
         Serial.print(" l_vel=");
-        Serial.print(leftWheelVelocity);
+        Serial.print(encoders[WHEEL_LEFT].getVelocity());
         Serial.print(" r_vel=");
-        Serial.print(rightWheelVelocity);
+        Serial.print(encoders[WHEEL_RIGHT].getVelocity());
 
         for (int i = 0; i < LASER_SENSORS_COUNT; i++) {
             Serial.print("\tS");
@@ -485,9 +378,8 @@ void loop(void) {
     // serial connection
     processSerial();
     // encoders
-    processLeftEncoder();
-    processRightEncoder();
-    countVelocity();
+    encoders[WHEEL_LEFT].update();
+    encoders[WHEEL_RIGHT].update();
     // ir sensors
     processIrSensors();
     // stat and debug
