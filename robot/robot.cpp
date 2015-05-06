@@ -309,9 +309,7 @@ int execudeCommand(String &input, String &output) {
     return 1;
 }
 
-void loop(void) {
-    loopCount++;
-
+void processButton() {
     if (digitalRead(BTN_PIN) == LOW) {
         btnPressed = true;
         resetEncoders();
@@ -322,7 +320,9 @@ void loop(void) {
         printDelay = millis();
         drive = true;
     }
+}
 
+void processCommands() {
     while (Serial.available()) {
         incomingChar = Serial.read();
         if (incomingChar == -1) {
@@ -340,7 +340,9 @@ void loop(void) {
             commandBuffer += (char)incomingChar;
         }
     }
+}
 
+void processLeftEncoder() {
     tmpTime = micros();
     if ((leftReadedTime + ANALOG_READ_DELAY < tmpTime)
         || (leftReadedTime > tmpTime)
@@ -366,7 +368,9 @@ void loop(void) {
         leftReadedCount++;
         leftReadedTime = tmpTime;
     }
+}
 
+void processRightEncoder() {
     tmpTime = micros();
     if ((rightReadedTime + ANALOG_READ_DELAY < tmpTime)
         || (rightReadedTime > tmpTime)
@@ -392,7 +396,9 @@ void loop(void) {
         rightReadedCount++;
         rightReadedTime = tmpTime;
     }
+}
 
+void processIrSensors() {
     tmpTime = micros();
     if ((sensorReadedTime + SENSOR_READ_DELAY < tmpTime)
         || (leftReadedTime > tmpTime)
@@ -410,7 +416,9 @@ void loop(void) {
         sensorReadedCount++;
         sensorReadedTime = tmpTime;
     }
+}
 
+void countVelocity() {
     if (wheelVelocityTime + WHEEL_VELOCITY_TIME < millis()) {
         leftWheelVelocity = (leftCounter - leftWheelCounterLast) * WHEEL_VELOCITY_SCALER / WHEEL_VELOCITY_TIME;
         leftWheelCounterLast = leftCounter;
@@ -418,6 +426,10 @@ void loop(void) {
         rightWheelCounterLast = rightCounter;
         wheelVelocityTime = millis();
     }
+}
+
+void countPerformance() {
+    loopCount++;
 
     if (printDelay + 1000 < millis()) {
         perf = loopCount;
@@ -434,29 +446,42 @@ void loop(void) {
             }
         }
 
-        if (debug & 1) {
-            Serial.print("left=");
-            Serial.print(leftCounter);
-            Serial.print(" right=");
-            Serial.print(rightCounter);
-            Serial.print(" loops=");
-            Serial.print(perf);
-
-            Serial.print(" l_vel=");
-            Serial.print(leftWheelVelocity);
-            Serial.print(" r_vel=");
-            Serial.print(rightWheelVelocity);
-
-            for (int i = 0; i < LASER_SENSORS_COUNT; i++) {
-                Serial.print("\tS");
-                Serial.print(i);
-                Serial.print("=");
-                Serial.print(analogSensorValueAvg[i]);
-            }
-            Serial.println();
-        }
+        printDebugInfo();
 
         loopCount = 0;
         printDelay = millis();
     }
+}
+
+void printDebugInfo() {
+    if (debug & 1) {
+        Serial.print("left=");
+        Serial.print(leftCounter);
+        Serial.print(" right=");
+        Serial.print(rightCounter);
+        Serial.print(" loops=");
+        Serial.print(perf);
+
+        Serial.print(" l_vel=");
+        Serial.print(leftWheelVelocity);
+        Serial.print(" r_vel=");
+        Serial.print(rightWheelVelocity);
+
+        for (int i = 0; i < LASER_SENSORS_COUNT; i++) {
+            Serial.print("\tS");
+            Serial.print(i);
+            Serial.print("=");
+            Serial.print(analogSensorValueAvg[i]);
+        }
+        Serial.println();
+    }
+}
+
+void loop(void) {
+    processButton();
+    processCommands();
+    processRightEncoder();
+    processIrSensors();
+    countVelocity();
+    countPerformance();
 }
