@@ -169,7 +169,7 @@ void setup() {
     }
 
     Serial.begin(115200);
-    Serial.println("=========== BEGIN ===========");
+    Serial.println("===== QuickBot has been initialized =====");
 }
 
 void resetEncoders() {
