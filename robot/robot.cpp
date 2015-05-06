@@ -42,8 +42,6 @@ Encoder encoders[WHEEL_COUNT] = {Encoder(LEFT_WHEEL_ENCODER_PIN), Encoder(RIGHT_
 int debug = 0;
 unsigned long perf = 0;
 
-#define BTN_PIN 12
-
 unsigned long tmpTime = 0;
 int tmpValue = 0;
 unsigned int tmpIndex = 0;
@@ -62,9 +60,6 @@ unsigned int sensorReadedCount = 0;
 unsigned long sensorReadedTime = 0;
 unsigned int laserSensors[LASER_SENSORS_COUNT] = {A2, A3, A0, A1, A7};
 unsigned int laserIndex = 0;
-
-bool drive = false;
-bool btnPressed = false;
 
 String commandBuffer;
 
@@ -114,8 +109,6 @@ void setup() {
     for (int i = WHEEL_LEFT; i < WHEEL_COUNT; i++) {
         encoders[i].init();
     }
-
-    pinMode(BTN_PIN, INPUT_PULLUP);
 
     for (int i = 0; i < WHEEL_COUNT; i++) {
         for (int j = 0; j < WHEEL_PIN_COUNT; j++) {
@@ -265,19 +258,6 @@ int execudeCommand(String &input, String &output) {
     return 1;
 }
 
-void processButton() {
-    if (digitalRead(BTN_PIN) == LOW) {
-        btnPressed = true;
-        resetEncoders();
-        delay(1000);
-
-        driveWheel(WHEEL_LEFT, 255);
-        driveWheel(WHEEL_RIGHT, 255);
-        printDelay = millis();
-        drive = true;
-    }
-}
-
 void processSerial() {
     while (Serial.available()) {
         int incomingChar = Serial.read();
@@ -352,29 +332,14 @@ void countPerformance() {
 
     if (printDelay + 1000 < millis()) {
         perf = loopCount;
-
-        if (btnPressed) {
-            if (drive) {
-                stopWheel(WHEEL_LEFT, true);
-                stopWheel(WHEEL_RIGHT, true);
-                drive = false;
-            } else {
-                stopWheel(WHEEL_LEFT, false);
-                stopWheel(WHEEL_RIGHT, false);
-                btnPressed = false;
-            }
-        }
-
-        printDebugInfo();
-
         loopCount = 0;
         printDelay = millis();
+
+        printDebugInfo();
     }
 }
 
 void loop(void) {
-    // button
-    processButton();
     // serial connection
     processSerial();
     // encoders
