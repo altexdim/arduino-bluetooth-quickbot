@@ -39,8 +39,9 @@
 #include "IrSensor.h"
 #include "IrSensorsCollection.h"
 
-// Encoder objects
+// Encoders
 Encoder encoders[WHEEL_COUNT] = {Encoder(LEFT_WHEEL_ENCODER_PIN), Encoder(RIGHT_WHEEL_ENCODER_PIN)};
+// IR proximity sensors
 IrSensor sensors[IR_SENSORS_COUNT] = {
     IrSensor(IR_SENSOR_1_PIN),
     IrSensor(IR_SENSOR_2_PIN),
@@ -48,6 +49,7 @@ IrSensor sensors[IR_SENSORS_COUNT] = {
     IrSensor(IR_SENSOR_4_PIN),
     IrSensor(IR_SENSOR_5_PIN)
 };
+// IR sensors collection, update manager
 IrSensorsCollection sensorsCollection(sensors, IR_SENSORS_COUNT);
 
 int debug = 0;
