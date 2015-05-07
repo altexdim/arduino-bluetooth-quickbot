@@ -6,9 +6,9 @@
 #define SETTINGS_H
 
 // Pin connected to left encoder
-#define LEFT_WHEEL_ENCODER_PIN A4
+#define LEFT_WHEEL_ENCODER_PIN A5
 // Pin connected to right encoder
-#define RIGHT_WHEEL_ENCODER_PIN A5
+#define RIGHT_WHEEL_ENCODER_PIN A4
 
 // Number of IR sensors used
 #define IR_SENSORS_COUNT 5
