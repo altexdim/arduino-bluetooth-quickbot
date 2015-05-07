@@ -36,9 +36,17 @@
 #include "Encoder.h"
 #include "Types.h"
 #include "Settings.h"
+#include "IrSensor.h"
 
 // Encoder objects
 Encoder encoders[WHEEL_COUNT] = {Encoder(LEFT_WHEEL_ENCODER_PIN), Encoder(RIGHT_WHEEL_ENCODER_PIN)};
+IrSensor sensors[IR_SENSORS_COUNT] = {
+    IrSensor(IR_SENSOR_1_PIN),
+    IrSensor(IR_SENSOR_2_PIN),
+    IrSensor(IR_SENSOR_3_PIN),
+    IrSensor(IR_SENSOR_4_PIN),
+    IrSensor(IR_SENSOR_5_PIN)
+};
 
 int debug = 0;
 unsigned long perf = 0;
@@ -52,15 +60,9 @@ unsigned long printDelay = 0;
 
 unsigned int wheelPins[WHEEL_COUNT][WHEEL_PIN_COUNT] = {{2, 4, 5},{7, 8, 6}};
 
-#define SENSOR_READ_BUFFER_COUNT 5
-#define LASER_SENSORS_COUNT 5
-int analogSensorValue[LASER_SENSORS_COUNT][SENSOR_READ_BUFFER_COUNT];
-int analogSensorValueAvg[LASER_SENSORS_COUNT];
 unsigned int sensorReadedCount = 0;
-#define SENSOR_READ_DELAY 1000 / LASER_SENSORS_COUNT
+#define SENSOR_READ_DELAY 1000 / IR_SENSORS_COUNT
 unsigned long sensorReadedTime = 0;
-unsigned int laserSensors[LASER_SENSORS_COUNT] = {A2, A3, A0, A1, A7};
-unsigned int laserIndex = 0;
 
 String commandBuffer;
 
@@ -111,15 +113,15 @@ void setup() {
         encoders[i].init();
     }
 
+    for (int i = 0; i < IR_SENSORS_COUNT; i++) {
+        sensors[i].init();
+    }
+
     for (int i = 0; i < WHEEL_COUNT; i++) {
         for (int j = 0; j < WHEEL_PIN_COUNT; j++) {
             pinMode(wheelPins[i][j], OUTPUT);
             digitalWrite(wheelPins[i][j], LOW);
         }
-    }
-
-    for (int i = 0; i < LASER_SENSORS_COUNT; i++) {
-        pinMode(laserSensors[i], INPUT);
     }
 
     Serial.begin(115200);
@@ -172,11 +174,11 @@ int execudeCommand(String &input, String &output) {
 
     if (input.equals("IRVAL?")) {
         output.concat("[");
-        for (int i = 0; i < LASER_SENSORS_COUNT; i++) {
+        for (int i = 0; i < IR_SENSORS_COUNT; i++) {
             if (i) {
                 output.concat(", ");
             }
-            output.concat(analogSensorValueAvg[i]);
+            output.concat(sensors[i].getDistance());
         }
         output.concat("]");
         return 1;
@@ -289,17 +291,8 @@ void processIrSensors() {
     if ((sensorReadedTime + SENSOR_READ_DELAY < tmpTime)
         || (sensorReadedTime > tmpTime)
     ) {
-        laserIndex = sensorReadedCount % LASER_SENSORS_COUNT;
-        tmpIndex = (sensorReadedCount / LASER_SENSORS_COUNT) % SENSOR_READ_BUFFER_COUNT;
-
-        tmpValue = analogRead(laserSensors[laserIndex]);
-        analogSensorValue[laserIndex][tmpIndex] = tmpValue;
-
-        tmpValue += analogSensorValue[laserIndex][(SENSOR_READ_BUFFER_COUNT + tmpIndex - 1) % SENSOR_READ_BUFFER_COUNT];
-        tmpValue += analogSensorValue[laserIndex][(SENSOR_READ_BUFFER_COUNT + tmpIndex - 2) % SENSOR_READ_BUFFER_COUNT];
-        analogSensorValueAvg[laserIndex] = tmpValue / 3;
-
-        sensorReadedCount++;
+        sensors[sensorReadedCount].update();
+        sensorReadedCount = (sensorReadedCount + 1) % IR_SENSORS_COUNT;
         sensorReadedTime = tmpTime;
     }
 }
@@ -318,11 +311,11 @@ void printDebugInfo() {
         Serial.print(" r_vel=");
         Serial.print(encoders[WHEEL_RIGHT].getVelocity());
 
-        for (int i = 0; i < LASER_SENSORS_COUNT; i++) {
+        for (int i = 0; i < IR_SENSORS_COUNT; i++) {
             Serial.print("\tS");
             Serial.print(i);
             Serial.print("=");
-            Serial.print(analogSensorValueAvg[i]);
+            Serial.print(sensors[i].getDistance());
         }
         Serial.println();
     }

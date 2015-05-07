@@ -40,27 +40,28 @@ void Encoder::_updateCounter() {
     // If last reading is too old then we need to perform next reading
     if (timeBetweenUpdates > ENCODER_MIN_DELAY_BETWEEN_READ_US) {
         int currentValue = analogRead(_pin);
+        if (currentValue >= 0) {
+            // Placing new value to current index in buffer
+            _values[_currentBufferIndex] = currentValue;
 
-        // Placing new value to current index in buffer
-        _values[_currentBufferIndex] = currentValue;
+            // We take last ENCODER_AVG_FILTER_READINGS_COUNT values and calculate average
+            currentValue += _values[(ENCODER_READ_BUFFER_SIZE + _currentBufferIndex - 1) % ENCODER_READ_BUFFER_SIZE];
+            currentValue += _values[(ENCODER_READ_BUFFER_SIZE + _currentBufferIndex - 2) % ENCODER_READ_BUFFER_SIZE];
 
-        // We take last ENCODER_AVG_FILTER_READINGS_COUNT values and calculate average
-        currentValue += _values[(ENCODER_READ_BUFFER_SIZE + _currentBufferIndex - 1) % ENCODER_READ_BUFFER_SIZE];
-        currentValue += _values[(ENCODER_READ_BUFFER_SIZE + _currentBufferIndex - 2) % ENCODER_READ_BUFFER_SIZE];
-
-        // This is implementation of Schmitt trigger with hysteresis
-        if (currentValue <= (ENCODER_LOW_VALUE_THRESHOLD  * ENCODER_AVG_FILTER_READINGS_COUNT)) {
-            if (_state) {
-                _state = 0;
+            // This is implementation of Schmitt trigger with hysteresis
+            if (currentValue <= (ENCODER_LOW_VALUE_THRESHOLD  * ENCODER_AVG_FILTER_READINGS_COUNT)) {
+                if (_state) {
+                    _state = 0;
+                }
+            } else if (currentValue >= (ENCODER_HIGH_VALUE_THRESHOLD * ENCODER_AVG_FILTER_READINGS_COUNT)) {
+                if (!_state) {
+                    _state = 1;
+                    _counter += _direction;
+                }
             }
-        } else if (currentValue >= (ENCODER_HIGH_VALUE_THRESHOLD * ENCODER_AVG_FILTER_READINGS_COUNT)) {
-            if (!_state) {
-                _state = 1;
-                _counter += _direction;
-            }
+
+            _currentBufferIndex = (_currentBufferIndex + 1) % ENCODER_READ_BUFFER_SIZE;
         }
-
-        _currentBufferIndex = (_currentBufferIndex + 1) % ENCODER_READ_BUFFER_SIZE;
         _lastReadTime = currentTime;
     }
 }
