@@ -37,6 +37,7 @@
 #include "Types.h"
 #include "Settings.h"
 
+// Encoder objects
 Encoder encoders[WHEEL_COUNT] = {Encoder(LEFT_WHEEL_ENCODER_PIN), Encoder(RIGHT_WHEEL_ENCODER_PIN)};
 
 int debug = 0;
