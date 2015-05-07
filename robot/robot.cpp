@@ -38,19 +38,28 @@
 #include "Settings.h"
 #include "IrSensor.h"
 #include "IrSensorsCollection.h"
+#include "Motor.h"
 
 // Encoders
-Encoder encoders[WHEEL_COUNT] = {Encoder(LEFT_WHEEL_ENCODER_PIN), Encoder(RIGHT_WHEEL_ENCODER_PIN)};
+Encoder encoders[WHEEL_COUNT] = {
+    Encoder(LEFT_WHEEL_ENCODER_PIN),
+    Encoder(RIGHT_WHEEL_ENCODER_PIN),
+};
 // IR proximity sensors
 IrSensor sensors[IR_SENSORS_COUNT] = {
     IrSensor(IR_SENSOR_1_PIN),
     IrSensor(IR_SENSOR_2_PIN),
     IrSensor(IR_SENSOR_3_PIN),
     IrSensor(IR_SENSOR_4_PIN),
-    IrSensor(IR_SENSOR_5_PIN)
+    IrSensor(IR_SENSOR_5_PIN),
 };
 // IR sensors collection, update manager
 IrSensorsCollection sensorsCollection(sensors, IR_SENSORS_COUNT);
+// Motors
+Motor motors[WHEEL_COUNT] = {
+    Motor(LEFT_MOTOR_EN1_PIN, LEFT_MOTOR_EN2_PIN, LEFT_MOTOR_PWM_PIN),
+    Motor(RIGHT_MOTOR_EN1_PIN, RIGHT_MOTOR_EN2_PIN, RIGHT_MOTOR_PWM_PIN),
+};
 
 int debug = 0;
 unsigned long perf = 0;
@@ -58,54 +67,7 @@ unsigned long perf = 0;
 unsigned long loopCount = 0;
 unsigned long printDelay = 0;
 
-unsigned int wheelPins[WHEEL_COUNT][WHEEL_PIN_COUNT] = {
-    {LEFT_MOTOR_EN1_PIN, LEFT_MOTOR_EN2_PIN, LEFT_MOTOR_PWM_PIN},
-    {RIGHT_MOTOR_EN1_PIN, RIGHT_MOTOR_EN2_PIN, RIGHT_MOTOR_PWM_PIN}
-};
-
 String commandBuffer;
-
-int leftWheelPwm = 0;
-int rightWheelPwm = 0;
-
-#define PWM_MAX_VALUE 255
-
-void driveWheel(WHEEL wheel, int spd) {
-    if (spd < -PWM_MAX_VALUE || spd > PWM_MAX_VALUE) {
-        return;
-    }
-
-    if (wheel == WHEEL_LEFT) {
-        leftWheelPwm = spd;
-        encoders[WHEEL_LEFT].setDirection(spd);
-    } else {
-        rightWheelPwm = spd;
-        encoders[WHEEL_RIGHT].setDirection(spd);
-    }
-
-    if (spd < 0) {
-        digitalWrite(wheelPins[wheel][WHEEL_PIN_EN1], LOW);
-        digitalWrite(wheelPins[wheel][WHEEL_PIN_EN2], HIGH);
-        analogWrite(wheelPins[wheel][WHEEL_PIN_PWM], -spd);
-    } else {
-        digitalWrite(wheelPins[wheel][WHEEL_PIN_EN1], HIGH);
-        digitalWrite(wheelPins[wheel][WHEEL_PIN_EN2], LOW);
-        analogWrite(wheelPins[wheel][WHEEL_PIN_PWM], spd);
-    }
-}
-
-void stopWheel(WHEEL wheel, bool active) {
-    if (wheel == WHEEL_LEFT) {
-        leftWheelPwm = 0;
-        encoders[WHEEL_LEFT].setDirection(1);
-    } else {
-        rightWheelPwm = 0;
-        encoders[WHEEL_RIGHT].setDirection(1);
-    }
-    digitalWrite(wheelPins[wheel][WHEEL_PIN_EN1], active? HIGH: LOW);
-    digitalWrite(wheelPins[wheel][WHEEL_PIN_EN2], active? HIGH: LOW);
-    analogWrite(wheelPins[wheel][WHEEL_PIN_PWM], 0);
-}
 
 void setup() {
     for (int i = WHEEL_LEFT; i < WHEEL_COUNT; i++) {
@@ -117,10 +79,7 @@ void setup() {
     }
 
     for (int i = 0; i < WHEEL_COUNT; i++) {
-        for (int j = 0; j < WHEEL_PIN_COUNT; j++) {
-            pinMode(wheelPins[i][j], OUTPUT);
-            digitalWrite(wheelPins[i][j], LOW);
-        }
+        motors[i].init();
     }
 
     Serial.begin(115200);
@@ -202,8 +161,8 @@ int execudeCommand(String &input, String &output) {
     }
 
     if (input.equals("PWM=0,0")) {
-        stopWheel(WHEEL_LEFT, false);
-        stopWheel(WHEEL_RIGHT, false);
+        motors[WHEEL_LEFT].stop();
+        motors[WHEEL_RIGHT].stop();
         return 0;
     }
 
@@ -223,16 +182,18 @@ int execudeCommand(String &input, String &output) {
             index++;
         }
 
-        driveWheel(WHEEL_LEFT, data[0]);
-        driveWheel(WHEEL_RIGHT, data[1]);
+        motors[WHEEL_LEFT].drive(data[0]);
+        encoders[WHEEL_LEFT].setDirection(motors[WHEEL_LEFT].getPwm());
+        motors[WHEEL_RIGHT].drive(data[1]);
+        encoders[WHEEL_RIGHT].setDirection(motors[WHEEL_RIGHT].getPwm());
         return 0;
     }
 
     if (input.equals("PWM?")) {
         output.concat("[");
-        output.concat(leftWheelPwm);
+        output.concat(motors[WHEEL_LEFT].getPwm());
         output.concat(", ");
-        output.concat(rightWheelPwm);
+        output.concat(motors[WHEEL_RIGHT].getPwm());
         output.concat("]");
         return 1;
     }
