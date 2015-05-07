@@ -33,4 +33,7 @@
 // Right motor driver pwm pin
 #define RIGHT_MOTOR_PWM_PIN 6
 
+// Speed of the serial connection to read commands and returns output
+#define SERIAL_CONNECTION_SPEED 115200
+
 #endif

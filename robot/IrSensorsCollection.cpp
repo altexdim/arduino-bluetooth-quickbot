@@ -28,3 +28,11 @@ void IrSensorsCollection::update() {
         _lastUpdateTime = currentTime;
     }
 }
+
+unsigned int IrSensorsCollection::count() {
+    return _count;
+}
+
+IrSensor *IrSensorsCollection::getSensors() {
+    return _sensors;
+}

@@ -41,6 +41,8 @@ public:
      * Updates value of the next sensor if array.
      */
     void update();
+    unsigned int count();
+    IrSensor *getSensors();
 };
 
 #endif
