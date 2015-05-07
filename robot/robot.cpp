@@ -37,6 +37,7 @@
 #include "Types.h"
 #include "Settings.h"
 #include "IrSensor.h"
+#include "IrSensorsCollection.h"
 
 // Encoder objects
 Encoder encoders[WHEEL_COUNT] = {Encoder(LEFT_WHEEL_ENCODER_PIN), Encoder(RIGHT_WHEEL_ENCODER_PIN)};
@@ -47,6 +48,7 @@ IrSensor sensors[IR_SENSORS_COUNT] = {
     IrSensor(IR_SENSOR_4_PIN),
     IrSensor(IR_SENSOR_5_PIN)
 };
+IrSensorsCollection sensorsCollection(sensors, IR_SENSORS_COUNT);
 
 int debug = 0;
 unsigned long perf = 0;
@@ -55,10 +57,6 @@ unsigned long loopCount = 0;
 unsigned long printDelay = 0;
 
 unsigned int wheelPins[WHEEL_COUNT][WHEEL_PIN_COUNT] = {{2, 4, 5},{7, 8, 6}};
-
-unsigned int sensorReadedCount = 0;
-#define SENSOR_READ_DELAY 1000 / IR_SENSORS_COUNT
-unsigned long sensorReadedTime = 0;
 
 String commandBuffer;
 
@@ -282,17 +280,6 @@ void processSerial() {
     }
 }
 
-void processIrSensors() {
-    unsigned long tmpTime = micros();
-    if ((sensorReadedTime + SENSOR_READ_DELAY < tmpTime)
-        || (sensorReadedTime > tmpTime)
-    ) {
-        sensors[sensorReadedCount].update();
-        sensorReadedCount = (sensorReadedCount + 1) % IR_SENSORS_COUNT;
-        sensorReadedTime = tmpTime;
-    }
-}
-
 void printDebugInfo() {
     if (debug & 1) {
         Serial.print("left=");
@@ -336,7 +323,7 @@ void loop(void) {
     encoders[WHEEL_LEFT].update();
     encoders[WHEEL_RIGHT].update();
     // ir sensors
-    processIrSensors();
+    sensorsCollection.update();
     // stat and debug
     countPerformance();
 }
