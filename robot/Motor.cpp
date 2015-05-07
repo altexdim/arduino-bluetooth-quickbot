@@ -7,7 +7,7 @@ Motor::Motor(
 ) :
     _pinEn1(pinEn1),
     _pinEn2(pinEn2),
-    _pinPwm(pinPwm),
+    _pinPwm(pinPwm)
 {
     _pwm = 0;
 }
