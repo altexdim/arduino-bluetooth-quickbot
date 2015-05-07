@@ -37,11 +37,11 @@ void Encoder::_updateCounter() {
         currentValue += _values[(ENCODER_READ_BUFFER_SIZE + _currentBufferIndex - 1) % ENCODER_READ_BUFFER_SIZE];
         currentValue += _values[(ENCODER_READ_BUFFER_SIZE + _currentBufferIndex - 2) % ENCODER_READ_BUFFER_SIZE];
 
-        if (currentValue <= ENCODER_LOW_VALUE_THRESHOLD) {
+        if (currentValue <= (ENCODER_LOW_VALUE_THRESHOLD  * ENCODER_AVG_FILTER_READINGS_COUNT)) {
             if (_state) {
                 _state = 0;
             }
-        } else if (currentValue >= ENCODER_HIGH_VALUE_THRESHOLD) {
+        } else if (currentValue >= (ENCODER_HIGH_VALUE_THRESHOLD * ENCODER_AVG_FILTER_READINGS_COUNT)) {
             if (!_state) {
                 _state = 1;
                 _counter += _direction;
