@@ -11,7 +11,7 @@ private:
     unsigned int _count;
     unsigned long _lastUpdateTime;
     unsigned int _currentSensorIndex;
-    unsigned int _minDelayBetweenEverySensorUpdateUs;
+    unsigned long _minDelayBetweenEverySensorUpdateUs;
 public:
     IrSensorsCollection(IrSensor *sensors, unsigned int count);
     void update();
