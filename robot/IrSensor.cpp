@@ -10,11 +10,14 @@ IrSensor::IrSensor(
 }
 
 void IrSensor::init() {
+    // I'm not sure we should set this pin to input beacuse we use ADC function analogRead()
+    // It's here for consistency if we will try to use digitalRead() function.
     pinMode(_pin, INPUT);
 }
 
 void IrSensor::update() {
     int currentValue = analogRead(_pin);
+    // Check if value is correct positive number
     if (currentValue >= 0) {
         _valuesRaw[_currentBufferIndex] = currentValue;
 

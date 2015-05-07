@@ -19,4 +19,11 @@
 #define IR_SENSOR_4_PIN A1
 #define IR_SENSOR_5_PIN A7
 
+#define LEFT_MOTOR_EN1_PIN 2
+#define LEFT_MOTOR_EN2_PIN 4
+#define LEFT_MOTOR_PWM_PIN 5
+#define RIGHT_MOTOR_EN1_PIN 7
+#define RIGHT_MOTOR_EN2_PIN 8
+#define RIGHT_MOTOR_PWM_PIN 6
+
 #endif

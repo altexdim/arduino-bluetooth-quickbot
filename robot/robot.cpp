@@ -56,7 +56,10 @@ unsigned long perf = 0;
 unsigned long loopCount = 0;
 unsigned long printDelay = 0;
 
-unsigned int wheelPins[WHEEL_COUNT][WHEEL_PIN_COUNT] = {{2, 4, 5},{7, 8, 6}};
+unsigned int wheelPins[WHEEL_COUNT][WHEEL_PIN_COUNT] = {
+    {LEFT_MOTOR_EN1_PIN, LEFT_MOTOR_EN2_PIN, LEFT_MOTOR_PWM_PIN},
+    {RIGHT_MOTOR_EN1_PIN, RIGHT_MOTOR_EN2_PIN, RIGHT_MOTOR_PWM_PIN}
+};
 
 String commandBuffer;
 

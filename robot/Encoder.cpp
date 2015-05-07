@@ -19,7 +19,7 @@ Encoder::Encoder(
 }
 
 void Encoder::init() {
-    // I'm nut sure we should set this pin to input beacuse we use ADC function analogRead()
+    // I'm not sure we should set this pin to input beacuse we use ADC function analogRead()
     // It's here for consistency if we will try to use digitalRead() function
     // But if we will use digitalRead function we need to set INPUT_PULLUP mode
     // accorrding to datasheet for sparkfun encoders.
@@ -40,6 +40,7 @@ void Encoder::_updateCounter() {
     // If last reading is too old then we need to perform next reading
     if (timeBetweenUpdates > ENCODER_MIN_DELAY_BETWEEN_READ_US) {
         int currentValue = analogRead(_pin);
+        // Check if value is correct positive number
         if (currentValue >= 0) {
             // Placing new value to current index in buffer
             _values[_currentBufferIndex] = currentValue;
