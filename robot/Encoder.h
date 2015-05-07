@@ -88,7 +88,7 @@ public:
     /**
      * Set wheel direction
      *
-     * @param int direction - 1 for forward, -1 for backward
+     * @param int direction - positive or zero for forward, negative for backward
      */
     void setDirection(int direction);
     /**

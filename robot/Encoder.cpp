@@ -5,7 +5,9 @@ Encoder::Encoder(
 ) :
     _pin(pin)
 {
+    // default input state is logical HIGH level
     _state = 1;
+    // default direction is forward
     _direction = 1;
 
     _lastReadTime = 0;
@@ -17,12 +19,17 @@ Encoder::Encoder(
 }
 
 void Encoder::init() {
+    // I'm nut sure we should set this pin to input beacuse we use ADC function analogRead()
+    // It's here for consistency if we will try to use digitalRead() function
+    // But if we will use digitalRead function we need to set INPUT_PULLUP mode
+    // accorrding to datasheet for sparkfun encoders.
     pinMode(_pin, INPUT);
 }
 
 void Encoder::_updateCounter() {
     unsigned long currentTime = micros();
 
+    // First of all we calculate how many microseconds passed after last reading
     unsigned long timeBetweenUpdates;
     if (_lastReadTime <= currentTime) {
         timeBetweenUpdates = currentTime - _lastReadTime;
@@ -30,13 +37,18 @@ void Encoder::_updateCounter() {
         timeBetweenUpdates = ULONG_MAX - _lastReadTime + currentTime;
     }
 
+    // If last reading is too old then we need to perform next reading
     if (timeBetweenUpdates > ENCODER_MIN_DELAY_BETWEEN_READ_US) {
         int currentValue = analogRead(_pin);
+
+        // Placing new value to current index in buffer
         _values[_currentBufferIndex] = currentValue;
 
+        // We take last ENCODER_AVG_FILTER_READINGS_COUNT values and calculate average
         currentValue += _values[(ENCODER_READ_BUFFER_SIZE + _currentBufferIndex - 1) % ENCODER_READ_BUFFER_SIZE];
         currentValue += _values[(ENCODER_READ_BUFFER_SIZE + _currentBufferIndex - 2) % ENCODER_READ_BUFFER_SIZE];
 
+        // This is implementation of Schmitt trigger with hysteresis
         if (currentValue <= (ENCODER_LOW_VALUE_THRESHOLD  * ENCODER_AVG_FILTER_READINGS_COUNT)) {
             if (_state) {
                 _state = 0;
@@ -56,6 +68,7 @@ void Encoder::_updateCounter() {
 void Encoder::_updateVelocity() {
     unsigned long currentTime = millis();
 
+    // How much time passed after last velocity calculation
     unsigned long timeBetweenVelocityUpdates;
     if (_lastVelocityCountTime <= currentTime) {
         timeBetweenVelocityUpdates = currentTime - _lastVelocityCountTime;
@@ -63,6 +76,7 @@ void Encoder::_updateVelocity() {
         timeBetweenVelocityUpdates = ULONG_MAX - _lastVelocityCountTime + currentTime;
     }
 
+    // Update velocity if last value is too old
     if (timeBetweenVelocityUpdates > ENCODER_MIN_DELAY_BETWEEN_VELOCITY_COUNT_MS) {
         _velocity = (_counter - _lastVelocityCounterValue) * ENCODER_VELOCITY_SCALER_MS / timeBetweenVelocityUpdates;
         _lastVelocityCounterValue = _counter;
