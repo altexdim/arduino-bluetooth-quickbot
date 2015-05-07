@@ -1,7 +1,7 @@
 #include "IrSensorsCollection.h"
 
 IrSensorsCollection::IrSensorsCollection(
-    IrSensor &sensors[],
+    IrSensor *sensors,
     unsigned int count
 ) :
     _sensors(sensors),
@@ -24,7 +24,6 @@ void IrSensorsCollection::update() {
 
     if (timeBetweenUpdates > _minDelayBetweenEverySensorUpdateUs) {
         _sensors[_currentSensorIndex].update();
-
         _currentSensorIndex = (_currentSensorIndex + 1) % _count;
         _lastUpdateTime = currentTime;
     }

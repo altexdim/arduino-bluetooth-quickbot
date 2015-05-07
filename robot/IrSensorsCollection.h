@@ -7,13 +7,13 @@
 
 class IrSensorsCollection {
 private:
-    IrSensor &_sensors[];
+    IrSensor *_sensors;
     unsigned int _count;
     unsigned long _lastUpdateTime;
     unsigned int _currentSensorIndex;
     unsigned int _minDelayBetweenEverySensorUpdateUs;
 public:
-    IrSensorsCollection(IrSensor &sensors[], unsigned int count);
+    IrSensorsCollection(IrSensor *sensors, unsigned int count);
     void update();
 };
 
