@@ -109,6 +109,14 @@ void printDebugInfo() {
         Serial.print(" loops=");
         Serial.print(perf);
 
+        long test = encoders[WHEEL_LEFT].getVelocity();
+        if (test < 0) {
+            Serial.print("MINUS");
+        } else {
+            // FIXME: negative velocity prints big positiev values
+            Serial.print("PLUS");
+        }
+
         Serial.print(" l_vel=");
         Serial.print(encoders[WHEEL_LEFT].getVelocity());
         Serial.print(" r_vel=");

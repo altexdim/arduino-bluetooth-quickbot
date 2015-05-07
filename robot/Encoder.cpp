@@ -93,6 +93,7 @@ void Encoder::update() {
 
 void Encoder::reset() {
     _counter = 0;
+    _lastVelocityCounterValue = 0;
     _velocity = 0;
 }
 
