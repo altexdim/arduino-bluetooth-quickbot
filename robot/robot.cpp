@@ -51,10 +51,6 @@ IrSensor sensors[IR_SENSORS_COUNT] = {
 int debug = 0;
 unsigned long perf = 0;
 
-unsigned long tmpTime = 0;
-int tmpValue = 0;
-unsigned int tmpIndex = 0;
-
 unsigned long loopCount = 0;
 unsigned long printDelay = 0;
 
@@ -287,7 +283,7 @@ void processSerial() {
 }
 
 void processIrSensors() {
-    tmpTime = micros();
+    unsigned long tmpTime = micros();
     if ((sensorReadedTime + SENSOR_READ_DELAY < tmpTime)
         || (sensorReadedTime > tmpTime)
     ) {
