@@ -17,7 +17,19 @@ private:
     int &_debug;
     unsigned long &_perf;
 
+    int _commandCheck();
+
     int _executeCommand();
+    int _commandReset();
+    int _commandGetIrVal();
+    int _commandGetEnVel();
+    int _commandGetEnVal();
+    int _commandStop();
+    int _commandSetPwm();
+    int _commandGetPwm();
+    int _commandEnableDebug();
+    int _commandDisableDebug();
+    int _commandGetPerf();
 
 public:
     CommandProcessor(
