@@ -44,10 +44,6 @@ private:
     COMMAND _decodeCommand();
 
     /**
-     * Get last pwm motor driver values.
-     */
-    int _commandGetPwm();
-    /**
      * Enable debug mode command.
      */
     int _commandEnableDebug();

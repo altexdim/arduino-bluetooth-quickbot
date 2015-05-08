@@ -17,16 +17,6 @@ CommandProcessor::CommandProcessor(
 {
 }
 
-int CommandProcessor::_commandGetPwm() {
-    Motor *motors = _chassis.getMotors();
-    _outputBuffer.concat("[");
-    _outputBuffer.concat(motors[WHEEL_LEFT].getPwm());
-    _outputBuffer.concat(", ");
-    _outputBuffer.concat(motors[WHEEL_RIGHT].getPwm());
-    _outputBuffer.concat("]");
-    return 1;
-}
-
 int CommandProcessor::_commandEnableDebug() {
     _debug = 1;
     _outputBuffer = "Debug set to 1";
@@ -76,10 +66,10 @@ COMMAND CommandProcessor::_decodeCommand() {
         return COMMAND_SETPWM;
     }
 
-//    if (_inputBuffer.equals("PWM?")) {
-//        return _commandGetPwm();
-//    }
-//
+    if (_inputBuffer.equals("PWM?")) {
+        return COMMAND_GETPWM;
+    }
+
 //    if (_inputBuffer.equals("DEBUG=1")) {
 //        return _commandEnableDebug();
 //    }
