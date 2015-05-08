@@ -3,13 +3,13 @@
 CommandProcessor::CommandProcessor(
     Stream &stream,
     Chassis &chassis,
-    IrSensorsCollection &_sensorsCollection,
+    IrSensorsCollection &sensorsCollection,
     int &debug,
     unsigned long &perf
 ) :
     _stream(stream),
     _chassis(chassis),
-    _sensorsCollection(_sensorsCollection),
+    _sensorsCollection(sensorsCollection),
     _debug(debug),
     _perf(perf)
 {

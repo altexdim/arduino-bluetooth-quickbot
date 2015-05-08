@@ -69,7 +69,10 @@ Motor motors[WHEEL_COUNT] = {
 // Chassis
 Chassis chassis(encoders, motors);
 
+// Debug mode on/off switch
 int debug = 0;
+
+// Performance counter. Counts program loops per second.
 unsigned long perf = 0;
 
 // Command processor
