@@ -44,10 +44,6 @@ private:
     COMMAND _decodeCommand();
 
     /**
-     * Get IR sensor values.
-     */
-    int _commandGetIrVal();
-    /**
      * Get encoders velocity.
      */
     int _commandGetEnVel();

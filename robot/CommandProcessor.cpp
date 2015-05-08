@@ -17,20 +17,6 @@ CommandProcessor::CommandProcessor(
 {
 }
 
-int CommandProcessor::_commandGetIrVal() {
-    _outputBuffer.concat("[");
-    IrSensor *sensors = _sensorsCollection.getSensors();
-    unsigned int count = _sensorsCollection.count();
-    for (int i = 0; i < count; i++) {
-        if (i) {
-            _outputBuffer.concat(", ");
-        }
-        _outputBuffer.concat(sensors[i].getDistance());
-    }
-    _outputBuffer.concat("]");
-    return 1;
-}
-
 int CommandProcessor::_commandGetEnVel() {
     Encoder *encoders = _chassis.getEncoders();
     _outputBuffer.concat("[");
@@ -115,9 +101,9 @@ COMMAND CommandProcessor::_decodeCommand() {
         return COMMAND_RESET;
     }
 
-//    if (_inputBuffer.equals("IRVAL?")) {
-//        return _commandGetIrVal();
-//    }
+    if (_inputBuffer.equals("IRVAL?")) {
+        return COMMAND_GETIRVAL;
+    }
 //
 //    if (_inputBuffer.equals("ENVEL?")) {
 //        return _commandGetEnVel();

@@ -48,6 +48,8 @@
 #include "Commands/Reset.cpp"
 #include "Commands/Unknown.h"
 #include "Commands/Unknown.cpp"
+#include "Commands/GetIrVal.h"
+#include "Commands/GetIrVal.cpp"
 
 // Encoders
 Encoder encoders[WHEEL_COUNT] = {
@@ -113,6 +115,7 @@ void setup() {
     commands[COMMAND_CHECK] = new CheckCommand();
     commands[COMMAND_RESET] = new ResetCommand(chassis);
     commands[COMMAND_UNKNOWN] = new UnknownCommand();
+    commands[COMMAND_GETIRVAL] = new GetIrValCommand(sensorsCollection);
 
     Serial.begin(SERIAL_CONNECTION_SPEED);
 }
