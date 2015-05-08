@@ -116,7 +116,7 @@ void printDebugInfo() {
         if (test < 0) {
             Serial.print("MINUS");
         } else {
-            // FIXME: negative velocity prints big positiev values
+            // FIXME: negative velocity prints big positive values
             Serial.print("PLUS");
         }
 
