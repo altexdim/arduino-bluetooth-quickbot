@@ -41,7 +41,6 @@
 #include "Motor.h"
 #include "Chassis.h"
 #include "CommandProcessor.h"
-#include "Command.h"
 #include "CommandCheck.h"
 #include "CommandReset.h"
 #include "CommandUnknown.h"
