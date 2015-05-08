@@ -80,7 +80,7 @@ void Encoder::_updateVelocity() {
 
     // Update velocity if last value is too old
     if (timeBetweenVelocityUpdates > ENCODER_MIN_DELAY_BETWEEN_VELOCITY_COUNT_MS) {
-        _velocity = (_counter - _lastVelocityCounterValue) * ENCODER_VELOCITY_SCALER_MS / timeBetweenVelocityUpdates;
+        _velocity = (_counter - _lastVelocityCounterValue) * ENCODER_VELOCITY_SCALER_MS / (long)timeBetweenVelocityUpdates;
         _lastVelocityCounterValue = _counter;
         _lastVelocityCountTime = currentTime;
     }

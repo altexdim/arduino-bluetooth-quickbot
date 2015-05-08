@@ -135,15 +135,6 @@ void printDebugInfo() {
         Serial.print(encoders[WHEEL_RIGHT].getCounter());
         Serial.print(" loops=");
         Serial.print(perf);
-
-        long test = encoders[WHEEL_LEFT].getVelocity();
-        if (test < 0) {
-            Serial.print("MINUS");
-        } else {
-            // FIXME: negative velocity prints big positive values
-            Serial.print("PLUS");
-        }
-
         Serial.print(" l_vel=");
         Serial.print(encoders[WHEEL_LEFT].getVelocity());
         Serial.print(" r_vel=");
