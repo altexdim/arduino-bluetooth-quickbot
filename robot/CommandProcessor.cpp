@@ -150,10 +150,7 @@ COMMAND CommandProcessor::_decodeCommand() {
 //    if (_inputBuffer.equals("PERF?")) {
 //        return _commandGetPerf();
 //    }
-//
-//    _outputBuffer = "UNKNOWN COMMAND: ";
-//    _outputBuffer.concat(_inputBuffer);
-//    return 1;
+    return COMMAND_UNKNOWN;
 }
 
 void CommandProcessor::readCommand() {
