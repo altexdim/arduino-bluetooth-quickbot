@@ -54,6 +54,8 @@
 #include "Commands/GetEnVal.cpp"
 #include "Commands/GetEnVel.h"
 #include "Commands/GetEnVel.cpp"
+#include "Commands/Stop.h"
+#include "Commands/Stop.cpp"
 
 // Encoders
 Encoder encoders[WHEEL_COUNT] = {
@@ -122,6 +124,7 @@ void setup() {
     commands[COMMAND_GETIRVAL] = new GetIrValCommand(sensorsCollection);
     commands[COMMAND_GETENVAL] = new GetEnValCommand(chassis);
     commands[COMMAND_GETENVEL] = new GetEnVelCommand(chassis);
+    commands[COMMAND_STOP] = new StopCommand(chassis);
 
     Serial.begin(SERIAL_CONNECTION_SPEED);
 }

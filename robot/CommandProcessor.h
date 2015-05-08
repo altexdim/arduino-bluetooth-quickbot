@@ -44,10 +44,6 @@ private:
     COMMAND _decodeCommand();
 
     /**
-     * Stop motors.
-     */
-    int _commandStop();
-    /**
      * Drive motors.
      */
     int _commandSetPwm();

@@ -17,11 +17,6 @@ CommandProcessor::CommandProcessor(
 {
 }
 
-int CommandProcessor::_commandStop() {
-    _chassis.stop();
-    return 0;
-}
-
 int CommandProcessor::_commandSetPwm() {
     int data[2];
     int index = 0;
