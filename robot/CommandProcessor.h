@@ -12,8 +12,6 @@
 
 #include "Command.h"
 #include "Arduino.h"
-#include "Chassis.h"
-#include "IrSensorsCollection.h"
 #include "Types.h"
 
 class CommandProcessor {
@@ -26,35 +24,12 @@ private:
     // Stream to read commands and to write output.
     Stream &_stream;
 
-    // Chassis of the robot
-    Chassis &_chassis;
-    // IR sensors collection
-    IrSensorsCollection &_sensorsCollection;
-
-    // Debug mode
-    int &_debug;
-    // Performance counter
-    unsigned long &_perf;
-
     /**
      * Parse and execute command.
      *
      * Used for commands dispatching.
      */
     COMMAND _decodeCommand();
-
-    /**
-     * Enable debug mode command.
-     */
-    int _commandEnableDebug();
-    /**
-     * Disable debug mode command.
-     */
-    int _commandDisableDebug();
-    /**
-     * Get performance counter value.
-     */
-    int _commandGetPerf();
 
 public:
     /**
@@ -68,11 +43,7 @@ public:
      */
     CommandProcessor(
         Command **commands,
-        Stream &stream,
-        Chassis &chassis,
-        IrSensorsCollection &sensorsCollection,
-        int &debug,
-        unsigned long &perf
+        Stream &stream
     );
     /**
      * Read command from stream and execute it.

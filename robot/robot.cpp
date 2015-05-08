@@ -50,6 +50,9 @@
 #include "CommandStop.h"
 #include "CommandSetPwm.h"
 #include "CommandGetPwm.h"
+#include "CommandDebugEnable.h"
+#include "CommandDebugDisable.h"
+#include "CommandGetPerf.h"
 
 // Encoders
 Encoder encoders[WHEEL_COUNT] = {
@@ -121,6 +124,9 @@ void setup() {
     commands[COMMAND_STOP] = new CommandStop(chassis);
     commands[COMMAND_SETPWM] = new CommandSetPwm(chassis);
     commands[COMMAND_GETPWM] = new CommandGetPwm(chassis);
+    commands[COMMAND_DEBUG_DISABLE] = new CommandDebugDisable(debug);
+    commands[COMMAND_DEBUG_ENABLE] = new CommandDebugEnable(debug);
+    commands[COMMAND_GETPERF] = new CommandGetPerf(perf);
 
     Serial.begin(SERIAL_CONNECTION_SPEED);
 }

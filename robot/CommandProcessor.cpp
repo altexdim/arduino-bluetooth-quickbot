@@ -2,37 +2,11 @@
 
 CommandProcessor::CommandProcessor(
     Command **commands,
-    Stream &stream,
-    Chassis &chassis,
-    IrSensorsCollection &sensorsCollection,
-    int &debug,
-    unsigned long &perf
+    Stream &stream
 ) :
     _commands(commands),
-    _stream(stream),
-    _chassis(chassis),
-    _sensorsCollection(sensorsCollection),
-    _debug(debug),
-    _perf(perf)
+    _stream(stream)
 {
-}
-
-int CommandProcessor::_commandEnableDebug() {
-    _debug = 1;
-    _outputBuffer = "Debug set to 1";
-    return 1;
-}
-
-int CommandProcessor::_commandDisableDebug() {
-    _debug = 0;
-    _outputBuffer = "Debug set to 0";
-    return 1;
-}
-
-int CommandProcessor::_commandGetPerf() {
-    _outputBuffer = "Performance = ";
-    _outputBuffer.concat(_perf);
-    return 1;
 }
 
 COMMAND CommandProcessor::_decodeCommand() {
@@ -70,17 +44,18 @@ COMMAND CommandProcessor::_decodeCommand() {
         return COMMAND_GETPWM;
     }
 
-//    if (_inputBuffer.equals("DEBUG=1")) {
-//        return _commandEnableDebug();
-//    }
-//
-//    if (_inputBuffer.equals("DEBUG=0")) {
-//        return _commandDisableDebug();
-//    }
-//
-//    if (_inputBuffer.equals("PERF?")) {
-//        return _commandGetPerf();
-//    }
+    if (_inputBuffer.equals("DEBUG=1")) {
+        return COMMAND_DEBUG_ENABLE;
+    }
+
+    if (_inputBuffer.equals("DEBUG=0")) {
+        return COMMAND_DEBUG_DISABLE;
+    }
+
+    if (_inputBuffer.equals("PERF?")) {
+        return COMMAND_GETPERF;
+    }
+
     return COMMAND_UNKNOWN;
 }
 
