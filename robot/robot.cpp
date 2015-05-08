@@ -41,6 +41,8 @@
 #include "Motor.h"
 #include "Chassis.h"
 #include "CommandProcessor.h"
+#include "Commands/Command.h"
+#include "Commands/Check.h"
 
 // Encoders
 Encoder encoders[WHEEL_COUNT] = {
@@ -74,6 +76,10 @@ int debug = 0;
 
 // Performance counter. Counts program loops per second.
 unsigned long perf = 0;
+
+Command commands[] = {
+    CheckCommand()
+};
 
 // Command processor
 CommandProcessor commandProcessor(
@@ -157,4 +163,7 @@ void loop(void) {
     sensorsCollection.update();
     // stat and debug
     countPerformance();
+    String input;
+    String output;
+    commands[0].execute(input, output);
 }
