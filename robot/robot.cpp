@@ -92,11 +92,7 @@ Command *commands[COMMAND_COUNT];
 // Command processor
 CommandProcessor commandProcessor(
     commands,
-    Serial,
-    chassis,
-    sensorsCollection,
-    debug,
-    perf
+    Serial
 );
 
 unsigned long loopCount = 0;
