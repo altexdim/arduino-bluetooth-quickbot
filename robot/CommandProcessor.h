@@ -10,7 +10,7 @@
 #ifndef COMMANDPROCESSOR_H
 #define COMMANDPROCESSOR_H
 
-#include "Commands/Command.h"
+#include "Command.h"
 #include "Arduino.h"
 #include "Chassis.h"
 #include "IrSensorsCollection.h"

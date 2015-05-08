@@ -1,13 +1,13 @@
-#include "Commands/GetIrVal.h"
+#include "CommandGetIrVal.h"
 
-GetIrValCommand::GetIrValCommand(
+CommandGetIrVal::CommandGetIrVal(
     IrSensorsCollection &sensorsCollection
 ) :
     _sensorsCollection(sensorsCollection)
 {
 }
 
-int GetIrValCommand::execute(String &input, String &output) {
+int CommandGetIrVal::execute(String &input, String &output) {
     output.concat("[");
     IrSensor *sensors = _sensorsCollection.getSensors();
     unsigned int count = _sensorsCollection.count();

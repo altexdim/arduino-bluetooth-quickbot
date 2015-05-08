@@ -41,21 +41,14 @@
 #include "Motor.h"
 #include "Chassis.h"
 #include "CommandProcessor.h"
-#include "Commands/Command.h"
-#include "Commands/Check.h"
-#include "Commands/Check.cpp"
-#include "Commands/Reset.h"
-#include "Commands/Reset.cpp"
-#include "Commands/Unknown.h"
-#include "Commands/Unknown.cpp"
-#include "Commands/GetIrVal.h"
-#include "Commands/GetIrVal.cpp"
-#include "Commands/GetEnVal.h"
-#include "Commands/GetEnVal.cpp"
-#include "Commands/GetEnVel.h"
-#include "Commands/GetEnVel.cpp"
-#include "Commands/Stop.h"
-#include "Commands/Stop.cpp"
+#include "Command.h"
+#include "CommandCheck.h"
+#include "CommandReset.h"
+#include "CommandUnknown.h"
+#include "CommandGetIrVal.h"
+#include "CommandGetEnVal.h"
+#include "CommandGetEnVel.h"
+#include "CommandStop.h"
 
 // Encoders
 Encoder encoders[WHEEL_COUNT] = {
@@ -118,13 +111,13 @@ void setup() {
         motors[i].init();
     }
 
-    commands[COMMAND_CHECK] = new CheckCommand();
-    commands[COMMAND_RESET] = new ResetCommand(chassis);
-    commands[COMMAND_UNKNOWN] = new UnknownCommand();
-    commands[COMMAND_GETIRVAL] = new GetIrValCommand(sensorsCollection);
-    commands[COMMAND_GETENVAL] = new GetEnValCommand(chassis);
-    commands[COMMAND_GETENVEL] = new GetEnVelCommand(chassis);
-    commands[COMMAND_STOP] = new StopCommand(chassis);
+    commands[COMMAND_CHECK] = new CommandCheck();
+    commands[COMMAND_RESET] = new CommandReset(chassis);
+    commands[COMMAND_UNKNOWN] = new CommandUnknown();
+    commands[COMMAND_GETIRVAL] = new CommandGetIrVal(sensorsCollection);
+    commands[COMMAND_GETENVAL] = new CommandGetEnVal(chassis);
+    commands[COMMAND_GETENVEL] = new CommandGetEnVel(chassis);
+    commands[COMMAND_STOP] = new CommandStop(chassis);
 
     Serial.begin(SERIAL_CONNECTION_SPEED);
 }

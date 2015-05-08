@@ -1,13 +1,13 @@
-#include "Commands/GetEnVel.h"
+#include "CommandGetEnVal.h"
 
-GetEnVelCommand::GetEnVelCommand(
+CommandGetEnVal::CommandGetEnVal(
     Chassis &chassis
 ) :
     _chassis(chassis)
 {
 }
 
-int GetEnVelCommand::execute(String &input, String &output) {
+int CommandGetEnVal::execute(String &input, String &output) {
     Encoder *encoders = _chassis.getEncoders();
     output.concat("[");
     output.concat(encoders[WHEEL_LEFT].getVelocity());
