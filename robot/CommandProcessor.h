@@ -44,10 +44,6 @@ private:
     COMMAND _decodeCommand();
 
     /**
-     * Get encoders velocity.
-     */
-    int _commandGetEnVel();
-    /**
      * Stop motors.
      */
     int _commandStop();

@@ -17,16 +17,6 @@ CommandProcessor::CommandProcessor(
 {
 }
 
-int CommandProcessor::_commandGetEnVel() {
-    Encoder *encoders = _chassis.getEncoders();
-    _outputBuffer.concat("[");
-    _outputBuffer.concat(encoders[WHEEL_LEFT].getVelocity());
-    _outputBuffer.concat(", ");
-    _outputBuffer.concat(encoders[WHEEL_RIGHT].getVelocity());
-    _outputBuffer.concat("]");
-    return 1;
-}
-
 int CommandProcessor::_commandStop() {
     _chassis.stop();
     return 0;
@@ -94,11 +84,11 @@ COMMAND CommandProcessor::_decodeCommand() {
     if (_inputBuffer.equals("IRVAL?")) {
         return COMMAND_GETIRVAL;
     }
-//
-//    if (_inputBuffer.equals("ENVEL?")) {
-//        return _commandGetEnVel();
-//    }
-//
+
+    if (_inputBuffer.equals("ENVEL?")) {
+        return COMMAND_GETENVEL;
+    }
+
     if (_inputBuffer.equals("ENVAL?")) {
         return COMMAND_GETENVAL;
     }
