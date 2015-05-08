@@ -44,6 +44,8 @@
 #include "Commands/Command.h"
 #include "Commands/Check.h"
 #include "Commands/Check.cpp"
+#include "Commands/Reset.h"
+#include "Commands/Reset.cpp"
 
 // Encoders
 Encoder encoders[WHEEL_COUNT] = {
@@ -107,6 +109,7 @@ void setup() {
     }
 
     commands[COMMAND_CHECK] = new CheckCommand();
+    commands[COMMAND_RESET] = new ResetCommand(chassis);
 
     Serial.begin(SERIAL_CONNECTION_SPEED);
 }

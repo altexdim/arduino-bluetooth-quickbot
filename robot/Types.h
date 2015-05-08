@@ -19,6 +19,7 @@ enum WHEEL {
 
 enum COMMAND {
     COMMAND_CHECK,
+    COMMAND_RESET,
     COMMAND_COUNT
 };
 

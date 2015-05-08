@@ -14,6 +14,7 @@
 #include "Arduino.h"
 #include "Chassis.h"
 #include "IrSensorsCollection.h"
+#include "Types.h"
 
 class CommandProcessor {
 private:
@@ -40,14 +41,8 @@ private:
      *
      * Used for commands dispatching.
      */
-    int _executeCommand();
+    COMMAND _decodeCommand();
 
-    /**
-     * Reset command.
-     *
-     * Resets encoder counters.
-     */
-    int _commandReset();
     /**
      * Get IR sensor values.
      */

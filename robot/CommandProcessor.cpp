@@ -17,12 +17,6 @@ CommandProcessor::CommandProcessor(
 {
 }
 
-int CommandProcessor::_commandReset() {
-    _chassis.resetEncoders();
-    _outputBuffer = "Encoder values reset to [0, 0]";
-    return 1;
-}
-
 int CommandProcessor::_commandGetIrVal() {
     _outputBuffer.concat("[");
     IrSensor *sensors = _sensorsCollection.getSensors();
@@ -110,56 +104,56 @@ int CommandProcessor::_commandGetPerf() {
     return 1;
 }
 
-int CommandProcessor::_executeCommand() {
+COMMAND CommandProcessor::_decodeCommand() {
     _outputBuffer = "";
 
     if (_inputBuffer.equals("CHECK")) {
-        return _commands[COMMAND_CHECK]->execute(_inputBuffer, _outputBuffer);
+        return COMMAND_CHECK;
     }
 
     if (_inputBuffer.equals("RESET")) {
-        return _commandReset();
+        return COMMAND_RESET;
     }
 
-    if (_inputBuffer.equals("IRVAL?")) {
-        return _commandGetIrVal();
-    }
-
-    if (_inputBuffer.equals("ENVEL?")) {
-        return _commandGetEnVel();
-    }
-
-    if (_inputBuffer.equals("ENVAL?")) {
-        return _commandGetEnVal();
-    }
-
-    if (_inputBuffer.equals("PWM=0,0")) {
-        return _commandStop();
-    }
-
-    if (_inputBuffer.startsWith("PWM=")) {
-        return _commandSetPwm();
-    }
-
-    if (_inputBuffer.equals("PWM?")) {
-        return _commandGetPwm();
-    }
-
-    if (_inputBuffer.equals("DEBUG=1")) {
-        return _commandEnableDebug();
-    }
-
-    if (_inputBuffer.equals("DEBUG=0")) {
-        return _commandDisableDebug();
-    }
-
-    if (_inputBuffer.equals("PERF?")) {
-        return _commandGetPerf();
-    }
-
-    _outputBuffer = "UNKNOWN COMMAND: ";
-    _outputBuffer.concat(_inputBuffer);
-    return 1;
+//    if (_inputBuffer.equals("IRVAL?")) {
+//        return _commandGetIrVal();
+//    }
+//
+//    if (_inputBuffer.equals("ENVEL?")) {
+//        return _commandGetEnVel();
+//    }
+//
+//    if (_inputBuffer.equals("ENVAL?")) {
+//        return _commandGetEnVal();
+//    }
+//
+//    if (_inputBuffer.equals("PWM=0,0")) {
+//        return _commandStop();
+//    }
+//
+//    if (_inputBuffer.startsWith("PWM=")) {
+//        return _commandSetPwm();
+//    }
+//
+//    if (_inputBuffer.equals("PWM?")) {
+//        return _commandGetPwm();
+//    }
+//
+//    if (_inputBuffer.equals("DEBUG=1")) {
+//        return _commandEnableDebug();
+//    }
+//
+//    if (_inputBuffer.equals("DEBUG=0")) {
+//        return _commandDisableDebug();
+//    }
+//
+//    if (_inputBuffer.equals("PERF?")) {
+//        return _commandGetPerf();
+//    }
+//
+//    _outputBuffer = "UNKNOWN COMMAND: ";
+//    _outputBuffer.concat(_inputBuffer);
+//    return 1;
 }
 
 void CommandProcessor::readCommand() {
@@ -175,7 +169,8 @@ void CommandProcessor::readCommand() {
         }
 
         if (incomingChar == '*') {
-            int result = _executeCommand();
+            COMMAND decodedCommand = _decodeCommand();
+            int result = _commands[decodedCommand]->execute(_inputBuffer, _outputBuffer);
             if (result) {
                 _stream.println(_outputBuffer);
             }
