@@ -17,26 +17,6 @@ CommandProcessor::CommandProcessor(
 {
 }
 
-int CommandProcessor::_commandSetPwm() {
-    int data[2];
-    int index = 0;
-
-    char myString[16];
-    _inputBuffer.toCharArray(myString, sizeof(myString), 4);
-    char *p = strtok(myString, ",");
-
-    while (p) {
-        if (index < 2) {
-            data[index] = atoi(p);
-        }
-        p = strtok(NULL, " ");
-        index++;
-    }
-
-    _chassis.drive(data[0], data[1]);
-    return 0;
-}
-
 int CommandProcessor::_commandGetPwm() {
     Motor *motors = _chassis.getMotors();
     _outputBuffer.concat("[");
@@ -87,15 +67,15 @@ COMMAND CommandProcessor::_decodeCommand() {
     if (_inputBuffer.equals("ENVAL?")) {
         return COMMAND_GETENVAL;
     }
-//
-//    if (_inputBuffer.equals("PWM=0,0")) {
-//        return _commandStop();
-//    }
-//
-//    if (_inputBuffer.startsWith("PWM=")) {
-//        return _commandSetPwm();
-//    }
-//
+
+    if (_inputBuffer.equals("PWM=0,0")) {
+        return COMMAND_STOP;
+    }
+
+    if (_inputBuffer.startsWith("PWM=")) {
+        return COMMAND_SETPWM;
+    }
+
 //    if (_inputBuffer.equals("PWM?")) {
 //        return _commandGetPwm();
 //    }

@@ -49,6 +49,7 @@
 #include "CommandGetEnVal.h"
 #include "CommandGetEnVel.h"
 #include "CommandStop.h"
+#include "CommandSetPwm.h"
 
 // Encoders
 Encoder encoders[WHEEL_COUNT] = {
@@ -118,6 +119,7 @@ void setup() {
     commands[COMMAND_GETENVAL] = new CommandGetEnVal(chassis);
     commands[COMMAND_GETENVEL] = new CommandGetEnVel(chassis);
     commands[COMMAND_STOP] = new CommandStop(chassis);
+    commands[COMMAND_SETPWM] = new CommandSetPwm(chassis);
 
     Serial.begin(SERIAL_CONNECTION_SPEED);
 }

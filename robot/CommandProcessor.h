@@ -44,10 +44,6 @@ private:
     COMMAND _decodeCommand();
 
     /**
-     * Drive motors.
-     */
-    int _commandSetPwm();
-    /**
      * Get last pwm motor driver values.
      */
     int _commandGetPwm();
