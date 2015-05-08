@@ -17,4 +17,9 @@ enum WHEEL {
     WHEEL_COUNT
 };
 
+enum COMMAND {
+    COMMAND_CHECK,
+    COMMAND_COUNT
+};
+
 #endif

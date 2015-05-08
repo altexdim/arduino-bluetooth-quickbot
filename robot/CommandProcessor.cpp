@@ -1,23 +1,20 @@
 #include "CommandProcessor.h"
 
 CommandProcessor::CommandProcessor(
+    Command **commands,
     Stream &stream,
     Chassis &chassis,
     IrSensorsCollection &sensorsCollection,
     int &debug,
     unsigned long &perf
 ) :
+    _commands(commands),
     _stream(stream),
     _chassis(chassis),
     _sensorsCollection(sensorsCollection),
     _debug(debug),
     _perf(perf)
 {
-}
-
-int CommandProcessor::_commandCheck() {
-    _outputBuffer = "Hello from QuickBot";
-    return 1;
 }
 
 int CommandProcessor::_commandReset() {
@@ -117,7 +114,7 @@ int CommandProcessor::_executeCommand() {
     _outputBuffer = "";
 
     if (_inputBuffer.equals("CHECK")) {
-        return _commandCheck();
+        return _commands[COMMAND_CHECK]->execute(_inputBuffer, _outputBuffer);
     }
 
     if (_inputBuffer.equals("RESET")) {

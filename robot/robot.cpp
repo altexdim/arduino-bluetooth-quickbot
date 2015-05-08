@@ -43,6 +43,7 @@
 #include "CommandProcessor.h"
 #include "Commands/Command.h"
 #include "Commands/Check.h"
+#include "Commands/Check.cpp"
 
 // Encoders
 Encoder encoders[WHEEL_COUNT] = {
@@ -77,12 +78,11 @@ int debug = 0;
 // Performance counter. Counts program loops per second.
 unsigned long perf = 0;
 
-Command commands[] = {
-    CheckCommand()
-};
+Command *commands[COMMAND_COUNT];
 
 // Command processor
 CommandProcessor commandProcessor(
+    commands,
     Serial,
     chassis,
     sensorsCollection,
@@ -105,6 +105,8 @@ void setup() {
     for (int i = 0; i < WHEEL_COUNT; i++) {
         motors[i].init();
     }
+
+    commands[COMMAND_CHECK] = new CheckCommand();
 
     Serial.begin(SERIAL_CONNECTION_SPEED);
 }
@@ -163,7 +165,4 @@ void loop(void) {
     sensorsCollection.update();
     // stat and debug
     countPerformance();
-    String input;
-    String output;
-    commands[0].execute(input, output);
 }

@@ -10,12 +10,14 @@
 #ifndef COMMANDPROCESSOR_H
 #define COMMANDPROCESSOR_H
 
+#include "Commands/Command.h"
 #include "Arduino.h"
 #include "Chassis.h"
 #include "IrSensorsCollection.h"
 
 class CommandProcessor {
 private:
+    Command **_commands;
     // Input string buffer
     String _inputBuffer;
     // Output stream buffer
@@ -40,13 +42,6 @@ private:
      */
     int _executeCommand();
 
-
-    /**
-     * Check command.
-     *
-     * Used for ping.
-     */
-    int _commandCheck();
     /**
      * Reset command.
      *
@@ -101,6 +96,7 @@ public:
      * @param long perf - Performance counter
      */
     CommandProcessor(
+        Command **commands,
         Stream &stream,
         Chassis &chassis,
         IrSensorsCollection &sensorsCollection,

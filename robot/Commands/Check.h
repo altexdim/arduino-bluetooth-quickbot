@@ -5,7 +5,6 @@
 
 class CheckCommand : public Command {
 public:
-    CheckCommand();
     virtual int execute(String &input, String &output);
 };
 
