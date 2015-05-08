@@ -27,16 +27,6 @@ int CommandProcessor::_commandGetEnVel() {
     return 1;
 }
 
-int CommandProcessor::_commandGetEnVal() {
-    Encoder *encoders = _chassis.getEncoders();
-    _outputBuffer.concat("[");
-    _outputBuffer.concat(encoders[WHEEL_LEFT].getCounter());
-    _outputBuffer.concat(", ");
-    _outputBuffer.concat(encoders[WHEEL_RIGHT].getCounter());
-    _outputBuffer.concat("]");
-    return 1;
-}
-
 int CommandProcessor::_commandStop() {
     _chassis.stop();
     return 0;
@@ -109,9 +99,9 @@ COMMAND CommandProcessor::_decodeCommand() {
 //        return _commandGetEnVel();
 //    }
 //
-//    if (_inputBuffer.equals("ENVAL?")) {
-//        return _commandGetEnVal();
-//    }
+    if (_inputBuffer.equals("ENVAL?")) {
+        return COMMAND_GETENVAL;
+    }
 //
 //    if (_inputBuffer.equals("PWM=0,0")) {
 //        return _commandStop();

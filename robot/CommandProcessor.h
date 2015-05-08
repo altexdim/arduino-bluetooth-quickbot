@@ -48,10 +48,6 @@ private:
      */
     int _commandGetEnVel();
     /**
-     * Get encoders counters.
-     */
-    int _commandGetEnVal();
-    /**
      * Stop motors.
      */
     int _commandStop();
