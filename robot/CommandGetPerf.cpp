@@ -1,7 +1,7 @@
 #include "CommandGetPerf.h"
 
 CommandGetPerf::CommandGetPerf(
-    unsigned long &perf
+    PerformanceCounter &perf
 ) :
     _perf(perf)
 {
@@ -9,6 +9,6 @@ CommandGetPerf::CommandGetPerf(
 
 int CommandGetPerf::execute(String &input, String &output) {
     output = "Performance = ";
-    output.concat(_perf);
+    output.concat(_perf.getPerformanceValue());
     return 1;
 }

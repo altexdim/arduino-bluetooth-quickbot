@@ -53,6 +53,8 @@
 #include "CommandDebugEnable.h"
 #include "CommandDebugDisable.h"
 #include "CommandGetPerf.h"
+#include "PerformanceCounter.h"
+#include "Debugger.h"
 
 // Encoders
 Encoder encoders[WHEEL_COUNT] = {
@@ -81,11 +83,11 @@ Motor motors[WHEEL_COUNT] = {
 // Chassis
 Chassis chassis(encoders, motors);
 
-// Debug mode on/off switch
-int debug = 0;
-
 // Performance counter. Counts program loops per second.
-unsigned long perf = 0;
+PerformanceCounter performanceCounter;
+
+// Debuger
+Debugger debugger(encoders, performanceCounter, sensorsCollection, Serial);
 
 Command *commands[COMMAND_COUNT];
 
@@ -94,9 +96,6 @@ CommandProcessor commandProcessor(
     commands,
     Serial
 );
-
-unsigned long loopCount = 0;
-unsigned long printDelay = 0;
 
 void setup() {
     for (int i = WHEEL_LEFT; i < WHEEL_COUNT; i++) {
@@ -107,7 +106,7 @@ void setup() {
         sensors[i].init();
     }
 
-    for (int i = 0; i < WHEEL_COUNT; i++) {
+    for (int i = WHEEL_LEFT; i < WHEEL_COUNT; i++) {
         motors[i].init();
     }
 
@@ -120,56 +119,22 @@ void setup() {
     commands[COMMAND_STOP] = new CommandStop(chassis);
     commands[COMMAND_SETPWM] = new CommandSetPwm(chassis);
     commands[COMMAND_GETPWM] = new CommandGetPwm(chassis);
-    commands[COMMAND_DEBUG_DISABLE] = new CommandDebugDisable(debug);
-    commands[COMMAND_DEBUG_ENABLE] = new CommandDebugEnable(debug);
-    commands[COMMAND_GETPERF] = new CommandGetPerf(perf);
+    commands[COMMAND_DEBUG_DISABLE] = new CommandDebugDisable(debugger);
+    commands[COMMAND_DEBUG_ENABLE] = new CommandDebugEnable(debugger);
+    commands[COMMAND_GETPERF] = new CommandGetPerf(performanceCounter);
 
     Serial.begin(SERIAL_CONNECTION_SPEED);
-}
-
-void printDebugInfo() {
-    if (debug & 1) {
-        Serial.print("left=");
-        Serial.print(encoders[WHEEL_LEFT].getCounter());
-        Serial.print(" right=");
-        Serial.print(encoders[WHEEL_RIGHT].getCounter());
-        Serial.print(" loops=");
-        Serial.print(perf);
-        Serial.print(" l_vel=");
-        Serial.print(encoders[WHEEL_LEFT].getVelocity());
-        Serial.print(" r_vel=");
-        Serial.print(encoders[WHEEL_RIGHT].getVelocity());
-
-        for (int i = 0; i < IR_SENSORS_COUNT; i++) {
-            Serial.print("\tS");
-            Serial.print(i);
-            Serial.print("=");
-            Serial.print(sensors[i].getDistance());
-        }
-        Serial.println();
-    }
-}
-
-void countPerformance() {
-    loopCount++;
-
-    if (printDelay + 1000 < millis()) {
-        perf = loopCount;
-        loopCount = 0;
-        printDelay = millis();
-
-        printDebugInfo();
-    }
 }
 
 void loop(void) {
     // serial connection
     commandProcessor.readCommand();
-    // encoders
-    encoders[WHEEL_LEFT].update();
-    encoders[WHEEL_RIGHT].update();
+    // encoders on chassis
+    chassis.updateEncoders();
     // ir sensors
     sensorsCollection.update();
-    // stat and debug
-    countPerformance();
+    // stat
+    performanceCounter.update();
+    // debug
+    debugger.update();
 }

@@ -1,14 +1,14 @@
 #include "CommandDebugEnable.h"
 
 CommandDebugEnable::CommandDebugEnable(
-    int &debug
+    Debugger &debugger
 ) :
-    _debug(debug)
+    _debugger(debugger)
 {
 }
 
 int CommandDebugEnable::execute(String &input, String &output) {
-    _debug = 1;
+    _debugger.setDebugMode(1);
     output = "Debug set to 1";
     return 1;
 }

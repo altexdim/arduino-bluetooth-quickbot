@@ -1,14 +1,14 @@
 #include "CommandDebugDisable.h"
 
 CommandDebugDisable::CommandDebugDisable(
-    int &debug
+    Debugger &debugger
 ) :
-    _debug(debug)
+    _debugger(debugger)
 {
 }
 
 int CommandDebugDisable::execute(String &input, String &output) {
-    _debug = 0;
+    _debugger.setDebugMode(0);
     output = "Debug set to 0";
     return 1;
 }

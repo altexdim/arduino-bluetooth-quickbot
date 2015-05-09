@@ -2,12 +2,13 @@
 #define COMMANDDEBUGDISABLE_H
 
 #include "Command.h"
+#include "Debugger.h"
 
 class CommandDebugDisable : public Command {
 private:
-    int &_debug;
+    Debugger &_debugger;
 public:
-    CommandDebugDisable(int &debug);
+    CommandDebugDisable(Debugger &debugger);
     virtual int execute(String &input, String &output);
 };
 

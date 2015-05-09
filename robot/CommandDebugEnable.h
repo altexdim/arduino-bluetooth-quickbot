@@ -2,12 +2,13 @@
 #define COMMANDDEBUGENABLE_H
 
 #include "Command.h"
+#include "Debugger.h"
 
 class CommandDebugEnable : public Command {
 private:
-    int &_debug;
+    Debugger &_debugger;
 public:
-    CommandDebugEnable(int &debug);
+    CommandDebugEnable(Debugger &debugger);
     virtual int execute(String &input, String &output);
 };
 

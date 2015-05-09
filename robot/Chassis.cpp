@@ -9,6 +9,11 @@ Chassis::Chassis(
 {
 }
 
+void Chassis::updateEncoders() {
+    _encoders[WHEEL_LEFT].update();
+    _encoders[WHEEL_RIGHT].update();
+}
+
 void Chassis::resetEncoders() {
     _encoders[WHEEL_LEFT].reset();
     _encoders[WHEEL_RIGHT].reset();

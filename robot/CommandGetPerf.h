@@ -2,12 +2,13 @@
 #define COMMANDGETPERF_H
 
 #include "Command.h"
+#include "PerformanceCounter.h"
 
 class CommandGetPerf : public Command {
 private:
-    unsigned long &_perf;
+    PerformanceCounter &_perf;
 public:
-    CommandGetPerf(unsigned long &perf);
+    CommandGetPerf(PerformanceCounter &perf);
     virtual int execute(String &input, String &output);
 };
 

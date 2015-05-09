@@ -29,6 +29,7 @@ public:
         Encoder *encoders,
         Motor *motors
     );
+    void updateEncoders();
     /**
      * Resets encoders to 0.
      */
