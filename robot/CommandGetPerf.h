@@ -1,3 +1,15 @@
+/**
+ * Class for receiving performance counter value command.
+ *
+ * Returns current value of the performance counter.
+ *
+ * In program loops per second.
+ *
+ * COMMAND: $PERF?*
+ * OUTPUT EXAMPLE: "Performance = 1850"
+ * OUTPUT FORMAT: <string>
+ */
+
 #ifndef COMMANDGETPERF_H
 #define COMMANDGETPERF_H
 
