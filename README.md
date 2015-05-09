@@ -87,6 +87,6 @@ If enabled, prints debug info every second to the communication connection
 * **$DEBUG=0***  
 Disable debug mode
 
-* **$PERF?* **  
+* **$PERF?***  
 Get performance counter value.  
 This value means how many loops the program runs in one second.
