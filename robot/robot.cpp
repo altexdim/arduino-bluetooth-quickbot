@@ -36,7 +36,7 @@
  * Some statistics.
  *
  * Before refactoring the program had
- *      Firmware Size:  [Program:  bytes (.%)]  [Data:  bytes (.%)] on atmega328p
+ *      Firmware Size:  [Program: 9556 bytes (29.2%)]  [Data: 664 bytes (32.4%)] on atmega328p
  *      EEPROM   Size:  [Program: 0 bytes (0.0%)]  [Data: 0 bytes (0.0%)] on atmega328p
  *      Performance counter = 1918
  * After refactoring the program has
@@ -50,6 +50,10 @@
  *      1) How to put all commands files into subdirectory? Cmake does not compile them.
  *      The only workaround is to #include both .h and .cpp files, but that's not i want.
  *
+ * Possible ways of optimization:
+ *      1) Combine performance counter and debugger into one class.
+ *      2) Get rid of command classes in respect of functions.
+ *      3) Create new variable sampleRate (for example 20ms) and limits calculations of ir sensors to that value
  */
 
 #include <Arduino.h>
