@@ -40,6 +40,8 @@
 #include "IrSensorsCollection.h"
 #include "Motor.h"
 #include "Chassis.h"
+#include "PerformanceCounter.h"
+#include "Debugger.h"
 #include "CommandProcessor.h"
 #include "CommandCheck.h"
 #include "CommandReset.h"
@@ -53,8 +55,6 @@
 #include "CommandDebugEnable.h"
 #include "CommandDebugDisable.h"
 #include "CommandGetPerf.h"
-#include "PerformanceCounter.h"
-#include "Debugger.h"
 
 // Encoders
 Encoder encoders[WHEEL_COUNT] = {
