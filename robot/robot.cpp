@@ -1,11 +1,11 @@
 /**
  * This is fully functional QuickBot implementation on the Arduino Platform.
- * Original QuickBot site and repository http://o-botics.org/robots/quickbot/mooc/v2/
+ * Original QuickBot site and repository
+ *      http://o-botics.org/robots/quickbot/mooc/v1/
+ *      http://o-botics.org/robots/quickbot/mooc/v2/
  * QuickBot originated from coursera course "Control of Mobile Robots": 
  * https://www.coursera.org/course/conrob
  * 
- * This is early alfa release. But it fully functional.
- *
  * It can
  *     - read values from 5 IR sensors
  *     - calculate wheel rotations with encoders with precision of 1/16 wheel turn
