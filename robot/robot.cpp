@@ -30,6 +30,26 @@
  * 1000 loops per second means that each loop is as fast as 1 millisecond.
  * 
  * Motors can be started for one second with pressing the button connected to pin 12.
+ *
+ * ==============================================================================================
+ *
+ * Some statistics.
+ *
+ * Before refactoring the program had
+ *      Firmware Size:  [Program:  bytes (.%)]  [Data:  bytes (.%)] on atmega328p
+ *      EEPROM   Size:  [Program: 0 bytes (0.0%)]  [Data: 0 bytes (0.0%)] on atmega328p
+ *      Performance counter = 1918
+ * After refactoring the program has
+ *      Firmware Size:  [Program: 10466 bytes (31.9%)]  [Data: 760 bytes (37.1%)] on atmega328p
+ *      EEPROM   Size:  [Program: 0 bytes (0.0%)]  [Data: 0 bytes (0.0%)] on atmega328p
+ *      Performance counter = 1827
+ *
+ * ==============================================================================================
+ *
+ * Issues:
+ *      1) How to put all commands files into subdirectory? Cmake does not compile them.
+ *      The only workaround is to #include both .h and .cpp files, but that's not i want.
+ *
  */
 
 #include <Arduino.h>
