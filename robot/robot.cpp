@@ -1,11 +1,11 @@
 /**
  * This is fully functional QuickBot implementation on the Arduino Platform.
- * Original QuickBot site and repository http://o-botics.org/robots/quickbot/mooc/v2/
+ * Original QuickBot site and repository
+ *      http://o-botics.org/robots/quickbot/mooc/v1/
+ *      http://o-botics.org/robots/quickbot/mooc/v2/
  * QuickBot originated from coursera course "Control of Mobile Robots": 
  * https://www.coursera.org/course/conrob
  * 
- * This is early alfa release. But it fully functional.
- *
  * It can
  *     - read values from 5 IR sensors
  *     - calculate wheel rotations with encoders with precision of 1/16 wheel turn
@@ -30,433 +30,135 @@
  * 1000 loops per second means that each loop is as fast as 1 millisecond.
  * 
  * Motors can be started for one second with pressing the button connected to pin 12.
+ *
+ * ==============================================================================================
+ *
+ * Some statistics.
+ *
+ * Before refactoring the program had
+ *      Firmware Size:  [Program: 9556 bytes (29.2%)]  [Data: 664 bytes (32.4%)] on atmega328p
+ *      EEPROM   Size:  [Program: 0 bytes (0.0%)]  [Data: 0 bytes (0.0%)] on atmega328p
+ *      Performance counter = 1918
+ * After refactoring the program has
+ *      Firmware Size:  [Program: 10466 bytes (31.9%)]  [Data: 760 bytes (37.1%)] on atmega328p
+ *      EEPROM   Size:  [Program: 0 bytes (0.0%)]  [Data: 0 bytes (0.0%)] on atmega328p
+ *      Performance counter = 1827
+ *
+ * ==============================================================================================
+ *
+ * Issues:
+ *      1) How to put all commands files into subdirectory? Cmake does not compile them.
+ *      The only workaround is to #include both .h and .cpp files, but that's not i want.
+ *
+ * Possible ways of optimization:
+ *      1) Combine performance counter and debugger into one class.
+ *      2) Get rid of command classes in respect of functions.
+ *      3) Create new variable sampleRate (for example 20ms) and limits calculations of ir sensors to that value
  */
 
 #include <Arduino.h>
+#include "Encoder.h"
+#include "Types.h"
+#include "Settings.h"
+#include "IrSensor.h"
+#include "IrSensorsCollection.h"
+#include "Motor.h"
+#include "Chassis.h"
+#include "PerformanceCounter.h"
+#include "Debugger.h"
+#include "CommandProcessor.h"
+#include "CommandCheck.h"
+#include "CommandReset.h"
+#include "CommandUnknown.h"
+#include "CommandGetIrVal.h"
+#include "CommandGetEnVal.h"
+#include "CommandGetEnVel.h"
+#include "CommandStop.h"
+#include "CommandSetPwm.h"
+#include "CommandGetPwm.h"
+#include "CommandDebugEnable.h"
+#include "CommandDebugDisable.h"
+#include "CommandGetPerf.h"
 
-int debug = 0;
-unsigned long perf = 0;
-
-#define LEFT_WHEEL_ENCODER_PIN A4
-#define RIGHT_WHEEL_ENCODER_PIN A5
-#define BTN_PIN 12
-
-#define ANALOG_READ_BUFFER_COUNT 5
-#define ANALOG_READ_DELAY 300
-
-int leftReaded[ANALOG_READ_BUFFER_COUNT];
-unsigned int leftReadedCount = 0;
-unsigned long leftReadedTime = 0;
-long leftCounter = 0;
-int leftEncoderState = 1;
-
-int rightReaded[ANALOG_READ_BUFFER_COUNT];
-unsigned int rightReadedCount = 0;
-unsigned long rightReadedTime = 0;
-long rightCounter = 0;
-int rightEncoderState = 1;
-
-#define WHEEL_VELOCITY_TIME 1000
-#define WHEEL_VELOCITY_SCALER 1000
-long leftWheelVelocity = 0;
-long rightWheelVelocity = 0;
-long leftWheelCounterLast = 0;
-long rightWheelCounterLast = 0;
-unsigned long wheelVelocityTime = 0;
-long leftWheelDirection = 1;
-long rightWheelDirection = 1;
-
-unsigned long tmpTime = 0;
-int tmpValue = 0;
-unsigned int tmpIndex = 0;
-
-#define LOW_VALUE_THRESHOLD 100 * 3
-#define HIGH_VALUE_THRESHOLD 1000 * 3
-
-unsigned long loopCount = 0;
-unsigned long printDelay = 0;
-
-enum WHEEL {
-    WHEEL_LEFT,
-    WHEEL_RIGHT,
-    WHEEL_COUNT
+// Encoders
+Encoder encoders[WHEEL_COUNT] = {
+    Encoder(LEFT_WHEEL_ENCODER_PIN),
+    Encoder(RIGHT_WHEEL_ENCODER_PIN),
 };
 
-enum WHEEL_PINS {
-    WHEEL_PIN_EN1,
-    WHEEL_PIN_EN2,
-    WHEEL_PIN_PWM,
-    WHEEL_PIN_COUNT
+// IR proximity sensors
+IrSensor sensors[IR_SENSORS_COUNT] = {
+    IrSensor(IR_SENSOR_1_PIN),
+    IrSensor(IR_SENSOR_2_PIN),
+    IrSensor(IR_SENSOR_3_PIN),
+    IrSensor(IR_SENSOR_4_PIN),
+    IrSensor(IR_SENSOR_5_PIN),
 };
 
-unsigned int wheelPins[WHEEL_COUNT][WHEEL_PIN_COUNT] = {{2, 4, 5},{7, 8, 6}};
+// IR sensors collection, update manager
+IrSensorsCollection sensorsCollection(sensors, IR_SENSORS_COUNT);
 
-#define SENSOR_READ_BUFFER_COUNT 5
-#define LASER_SENSORS_COUNT 5
-int analogSensorValue[LASER_SENSORS_COUNT][SENSOR_READ_BUFFER_COUNT];
-int analogSensorValueAvg[LASER_SENSORS_COUNT];
-unsigned int sensorReadedCount = 0;
-#define SENSOR_READ_DELAY 1000 / LASER_SENSORS_COUNT
-unsigned long sensorReadedTime = 0;
-unsigned int laserSensors[LASER_SENSORS_COUNT] = {A2, A3, A0, A1, A7};
-unsigned int laserIndex = 0;
+// Motors
+Motor motors[WHEEL_COUNT] = {
+    Motor(LEFT_MOTOR_EN1_PIN, LEFT_MOTOR_EN2_PIN, LEFT_MOTOR_PWM_PIN),
+    Motor(RIGHT_MOTOR_EN1_PIN, RIGHT_MOTOR_EN2_PIN, RIGHT_MOTOR_PWM_PIN),
+};
 
-bool drive = false;
-bool btnPressed = false;
+// Chassis
+Chassis chassis(encoders, motors);
 
-int incomingChar;
+// Performance counter. Counts program loops per second.
+PerformanceCounter performanceCounter;
 
-String commandBuffer;
-String outputBuffer;
+// Debuger
+Debugger debugger(encoders, performanceCounter, sensorsCollection, Serial);
 
-int leftWheelPwm = 0;
-int rightWheelPwm = 0;
+Command *commands[COMMAND_COUNT];
 
-#define PWM_MAX_VALUE 255
-
-void driveWheel(WHEEL wheel, int spd) {
-    if (spd < -PWM_MAX_VALUE || spd > PWM_MAX_VALUE) {
-        return;
-    }
-
-    if (wheel == WHEEL_LEFT) {
-        leftWheelPwm = spd;
-        leftWheelDirection = spd < 0? -1: 1;
-    } else {
-        rightWheelPwm = spd;
-        rightWheelDirection = spd < 0? -1: 1;
-    }
-
-    if (spd < 0) {
-        digitalWrite(wheelPins[wheel][WHEEL_PIN_EN1], LOW);
-        digitalWrite(wheelPins[wheel][WHEEL_PIN_EN2], HIGH);
-        analogWrite(wheelPins[wheel][WHEEL_PIN_PWM], -spd);
-    } else {
-        digitalWrite(wheelPins[wheel][WHEEL_PIN_EN1], HIGH);
-        digitalWrite(wheelPins[wheel][WHEEL_PIN_EN2], LOW);
-        analogWrite(wheelPins[wheel][WHEEL_PIN_PWM], spd);
-    }
-}
-
-void stopWheel(WHEEL wheel, bool active) {
-    if (wheel == WHEEL_LEFT) {
-        leftWheelPwm = 0;
-        leftWheelDirection = 1;
-    } else {
-        rightWheelPwm = 0;
-        rightWheelDirection = 1;
-    }
-    digitalWrite(wheelPins[wheel][WHEEL_PIN_EN1], active? HIGH: LOW);
-    digitalWrite(wheelPins[wheel][WHEEL_PIN_EN2], active? HIGH: LOW);
-    analogWrite(wheelPins[wheel][WHEEL_PIN_PWM], 0);
-}
+// Command processor
+CommandProcessor commandProcessor(
+    commands,
+    Serial
+);
 
 void setup() {
-    pinMode(BTN_PIN, INPUT_PULLUP);
-
-    pinMode(LEFT_WHEEL_ENCODER_PIN, INPUT);
-    pinMode(RIGHT_WHEEL_ENCODER_PIN, INPUT);
-
-    for (int i = 0; i < WHEEL_COUNT; i++) {
-        for (int j = 0; j < WHEEL_PIN_COUNT; j++) {
-            pinMode(wheelPins[i][j], OUTPUT);
-            digitalWrite(wheelPins[i][j], LOW);
-        }
+    for (int i = WHEEL_LEFT; i < WHEEL_COUNT; i++) {
+        encoders[i].init();
     }
 
-    for (int i = 0; i < LASER_SENSORS_COUNT; i++) {
-        pinMode(laserSensors[i], INPUT);
+    for (int i = 0; i < IR_SENSORS_COUNT; i++) {
+        sensors[i].init();
     }
 
-    Serial.begin(115200);
-    Serial.println("=========== BEGIN ===========");
-}
-
-void resetEncoders() {
-    leftCounter = 0;
-    rightCounter = 0;
-    leftWheelCounterLast = 0;
-    rightWheelCounterLast = 0;
-    leftWheelVelocity = 0;
-    rightWheelVelocity = 0;
-}
-
-/**
-    // ---------- all commands ----------
-    [DONE] msgResult.group('CMD') == 'CHECK':
-    [DONE] msgResult.group('CMD') == 'PWM':        msgResult.group('QUERY'):
-    [DONE] msgResult.group('CMD') == 'PWM':        msgResult.group('SET') and msgResult.group('ARGS'):
-    [DONE] msgResult.group('CMD') == 'IRVAL':      msgResult.group('QUERY'):
-    [SKIP] msgResult.group('CMD') == 'ULTRAVAL':   msgResult.group('QUERY'):
-    [DONE] msgResult.group('CMD') == 'ENVAL':      msgResult.group('QUERY'):
-    [DONE] msgResult.group('CMD') == 'ENVEL':      msgResult.group('QUERY'):
-    [DONE] msgResult.group('CMD') == 'RESET':
-    [SKIP] msgResult.group('CMD') == 'UPDATE':     msgResult.group('SET') and msgResult.group('ARGS'):
-    [SKIP] msgResult.group('CMD') == 'END':
-
-    // ---------- commands from simulator ----------
-    [DONE] def send_halt(self):                        connection.sendtorobot('PWM=0,0')
-    [DONE] def set_pwm(self, l, r, connection):        connection.sendtorobot('PWM={0},{1}'.format(int(l), int(r)))
-    [DONE] def get_pwm(self, connection):              connection.sendtorobot('PWM?')
-
-    [DONE] def get_encoder_ticks(self, connection):    connection.sendtorobot('ENVAL?')
-    [DONE] def get_encoder_velocity(self, connection): connection.sendtorobot('ENVEL?')
-    [DONE] def get_ir_raw_values(self, connection):    connection.sendtorobot('IRVAL?')
-
-    [DONE] def send_reset(self):                       connection.sendtorobot('RESET')
-    [DONE] def ping(self):                             connection.sendtorobot('CHECK')
- */
-int execudeCommand(String &input, String &output) {
-    output = "";
-
-    if (input.equals("CHECK")) {
-        output = "Hello from QuickBot";
-        return 1;
+    for (int i = WHEEL_LEFT; i < WHEEL_COUNT; i++) {
+        motors[i].init();
     }
 
-    if (input.equals("RESET")) {
-        resetEncoders();
-        output = "Encoder values reset to [0, 0]";
-        return 1;
-    }
+    commands[COMMAND_CHECK] = new CommandCheck();
+    commands[COMMAND_RESET] = new CommandReset(chassis);
+    commands[COMMAND_UNKNOWN] = new CommandUnknown();
+    commands[COMMAND_GETIRVAL] = new CommandGetIrVal(sensorsCollection);
+    commands[COMMAND_GETENVAL] = new CommandGetEnVal(chassis);
+    commands[COMMAND_GETENVEL] = new CommandGetEnVel(chassis);
+    commands[COMMAND_STOP] = new CommandStop(chassis);
+    commands[COMMAND_SETPWM] = new CommandSetPwm(chassis);
+    commands[COMMAND_GETPWM] = new CommandGetPwm(chassis);
+    commands[COMMAND_DEBUG_DISABLE] = new CommandDebugDisable(debugger);
+    commands[COMMAND_DEBUG_ENABLE] = new CommandDebugEnable(debugger);
+    commands[COMMAND_GETPERF] = new CommandGetPerf(performanceCounter);
 
-    if (input.equals("IRVAL?")) {
-        output.concat("[");
-        for (int i = 0; i < LASER_SENSORS_COUNT; i++) {
-            if (i) {
-                output.concat(", ");
-            }
-            output.concat(analogSensorValueAvg[i]);
-        }
-        output.concat("]");
-        return 1;
-    }
-
-    if (input.equals("ENVEL?")) {
-        output.concat("[");
-        output.concat(leftWheelVelocity);
-        output.concat(", ");
-        output.concat(rightWheelVelocity);
-        output.concat("]");
-        return 1;
-    }
-
-    if (input.equals("ENVAL?")) {
-        output.concat("[");
-        output.concat(leftCounter);
-        output.concat(", ");
-        output.concat(rightCounter);
-        output.concat("]");
-        return 1;
-    }
-
-    if (input.equals("PWM=0,0")) {
-        stopWheel(WHEEL_LEFT, false);
-        stopWheel(WHEEL_RIGHT, false);
-        return 0;
-    }
-
-    if (input.startsWith("PWM=")) {
-        int data[2];
-        int index = 0;
-
-        char myString[16];
-        input.toCharArray(myString, sizeof(myString), 4);
-        char *p = strtok(myString, ",");
-
-        while (p) {
-            if (index < 2) {
-                data[index] = atoi(p);
-            }
-            p = strtok(NULL, " ");
-            index++;
-        }
-
-        driveWheel(WHEEL_LEFT, data[0]);
-        driveWheel(WHEEL_RIGHT, data[1]);
-        return 0;
-    }
-
-    if (input.equals("PWM?")) {
-        output.concat("[");
-        output.concat(leftWheelPwm);
-        output.concat(", ");
-        output.concat(rightWheelPwm);
-        output.concat("]");
-        return 1;
-    }
-
-    if (input.equals("DEBUG=1")) {
-        debug = 1;
-        output = "Debug set to 1";
-        return 1;
-    }
-
-    if (input.equals("DEBUG=0")) {
-        debug = 0;
-        output = "Debug set to 0";
-        return 1;
-    }
-
-    if (input.equals("PERF?")) {
-        output = "Performance = ";
-        output.concat(perf);
-        return 1;
-    }
-
-    output = "UNKNOWN COMMAND: ";
-    output.concat(input);
-    return 1;
+    Serial.begin(SERIAL_CONNECTION_SPEED);
 }
 
 void loop(void) {
-    loopCount++;
-
-    if (digitalRead(BTN_PIN) == LOW) {
-        btnPressed = true;
-        resetEncoders();
-        delay(1000);
-
-        driveWheel(WHEEL_LEFT, 255);
-        driveWheel(WHEEL_RIGHT, 255);
-        printDelay = millis();
-        drive = true;
-    }
-
-    while (Serial.available()) {
-        incomingChar = Serial.read();
-        if (incomingChar == -1) {
-            continue;
-        }
-
-        if (incomingChar == '$') {
-            commandBuffer = "";
-        } else if (incomingChar == '*') {
-            int result = execudeCommand(commandBuffer, outputBuffer);
-            if (result) {
-                Serial.println(outputBuffer);
-            }
-        } else {
-            commandBuffer += (char)incomingChar;
-        }
-    }
-
-    tmpTime = micros();
-    if ((leftReadedTime + ANALOG_READ_DELAY < tmpTime)
-        || (leftReadedTime > tmpTime)
-    ) {
-        tmpValue = analogRead(LEFT_WHEEL_ENCODER_PIN);
-        tmpIndex = leftReadedCount % ANALOG_READ_BUFFER_COUNT;
-        leftReaded[tmpIndex] = tmpValue;
-
-        tmpValue += leftReaded[(ANALOG_READ_BUFFER_COUNT + tmpIndex - 1) % ANALOG_READ_BUFFER_COUNT];
-        tmpValue += leftReaded[(ANALOG_READ_BUFFER_COUNT + tmpIndex - 2) % ANALOG_READ_BUFFER_COUNT];
-
-        if (tmpValue <= LOW_VALUE_THRESHOLD) {
-            if (leftEncoderState) {
-                leftEncoderState = 0;
-            }
-        } else if (tmpValue >= HIGH_VALUE_THRESHOLD) {
-            if (!leftEncoderState) {
-                leftEncoderState = 1;
-                leftCounter+=leftWheelDirection;
-            }
-        }
-
-        leftReadedCount++;
-        leftReadedTime = tmpTime;
-    }
-
-    tmpTime = micros();
-    if ((rightReadedTime + ANALOG_READ_DELAY < tmpTime)
-        || (rightReadedTime > tmpTime)
-    ) {
-        tmpValue = analogRead(RIGHT_WHEEL_ENCODER_PIN);
-        tmpIndex = rightReadedCount % ANALOG_READ_BUFFER_COUNT;
-        rightReaded[tmpIndex] = tmpValue;
-
-        tmpValue += rightReaded[(ANALOG_READ_BUFFER_COUNT + tmpIndex - 1) % ANALOG_READ_BUFFER_COUNT];
-        tmpValue += rightReaded[(ANALOG_READ_BUFFER_COUNT + tmpIndex - 2) % ANALOG_READ_BUFFER_COUNT];
-
-        if (tmpValue <= LOW_VALUE_THRESHOLD) {
-            if (rightEncoderState) {
-                rightEncoderState = 0;
-            }
-        } else if (tmpValue >= HIGH_VALUE_THRESHOLD) {
-            if (!rightEncoderState) {
-                rightEncoderState = 1;
-                rightCounter+=rightWheelDirection;
-            }
-        }
-
-        rightReadedCount++;
-        rightReadedTime = tmpTime;
-    }
-
-    tmpTime = micros();
-    if ((sensorReadedTime + SENSOR_READ_DELAY < tmpTime)
-        || (sensorReadedTime > tmpTime)
-    ) {
-        laserIndex = sensorReadedCount % LASER_SENSORS_COUNT;
-        tmpIndex = (sensorReadedCount / LASER_SENSORS_COUNT) % SENSOR_READ_BUFFER_COUNT;
-
-        tmpValue = analogRead(laserSensors[laserIndex]);
-        analogSensorValue[laserIndex][tmpIndex] = tmpValue;
-
-        tmpValue += analogSensorValue[laserIndex][(SENSOR_READ_BUFFER_COUNT + tmpIndex - 1) % SENSOR_READ_BUFFER_COUNT];
-        tmpValue += analogSensorValue[laserIndex][(SENSOR_READ_BUFFER_COUNT + tmpIndex - 2) % SENSOR_READ_BUFFER_COUNT];
-        analogSensorValueAvg[laserIndex] = tmpValue / 3;
-
-        sensorReadedCount++;
-        sensorReadedTime = tmpTime;
-    }
-
-    if (wheelVelocityTime + WHEEL_VELOCITY_TIME < millis()) {
-        leftWheelVelocity = (leftCounter - leftWheelCounterLast) * WHEEL_VELOCITY_SCALER / WHEEL_VELOCITY_TIME;
-        leftWheelCounterLast = leftCounter;
-        rightWheelVelocity = (rightCounter - rightWheelCounterLast) * WHEEL_VELOCITY_SCALER / WHEEL_VELOCITY_TIME;
-        rightWheelCounterLast = rightCounter;
-        wheelVelocityTime = millis();
-    }
-
-    if (printDelay + 1000 < millis()) {
-        perf = loopCount;
-
-        if (btnPressed) {
-            if (drive) {
-                stopWheel(WHEEL_LEFT, true);
-                stopWheel(WHEEL_RIGHT, true);
-                drive = false;
-            } else {
-                stopWheel(WHEEL_LEFT, false);
-                stopWheel(WHEEL_RIGHT, false);
-                btnPressed = false;
-            }
-        }
-
-        if (debug & 1) {
-            Serial.print("left=");
-            Serial.print(leftCounter);
-            Serial.print(" right=");
-            Serial.print(rightCounter);
-            Serial.print(" loops=");
-            Serial.print(perf);
-
-            Serial.print(" l_vel=");
-            Serial.print(leftWheelVelocity);
-            Serial.print(" r_vel=");
-            Serial.print(rightWheelVelocity);
-
-            for (int i = 0; i < LASER_SENSORS_COUNT; i++) {
-                Serial.print("\tS");
-                Serial.print(i);
-                Serial.print("=");
-                Serial.print(analogSensorValueAvg[i]);
-            }
-            Serial.println();
-        }
-
-        loopCount = 0;
-        printDelay = millis();
-    }
+    // serial connection
+    commandProcessor.readCommand();
+    // encoders on chassis
+    chassis.updateEncoders();
+    // ir sensors
+    sensorsCollection.update();
+    // stat
+    performanceCounter.update();
+    // debug
+    debugger.update();
 }
