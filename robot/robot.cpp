@@ -113,6 +113,7 @@ PerformanceCounter performanceCounter;
 // Debuger
 Debugger debugger(encoders, performanceCounter, sensorsCollection, Serial);
 
+// Available commands
 Command *commands[COMMAND_COUNT];
 
 // Command processor
