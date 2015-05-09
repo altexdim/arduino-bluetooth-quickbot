@@ -6,7 +6,7 @@
  * In program loops per second.
  *
  * COMMAND: $PERF?*
- * OUTPUT EXAMPLE: "Performance = 1850"
+ * OUTPUT EXAMPLE: Performance = 1850
  * OUTPUT FORMAT: <string>
  */
 

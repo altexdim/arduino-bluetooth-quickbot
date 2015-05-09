@@ -57,36 +57,47 @@ Commands
 ----------------------------------
 
 * **$CHECK***  
-Check (ping)
+*OUTPUT*: Hello from QuickBot
+Check (ping)  
 
 * **$RESET***  
+*OUTPUT*: Encoder values reset to [0, 0]
 Reset counter
 
 * **$IRVAL?***  
+*OUTPUT*: [100, 150, 200, 250, 300]
 Get IR sensor values
 
 * **$ENVAL?***  
+*OUTPUT*: [-5, 10]
 Get encoders values
 
 * **$ENVEL?***  
+*OUTPUT*: [-15, 20]
 Get encoders velocities
 
 * **$PWM=0,0***  
+*OUTPUT*: None
 Stops motors
 
-* **$PWM=X,Y***  
+* **$PWM=123,234***  
+*OUTPUT*: None
 Set pwm values to motors drivers
 
 * **$PWM?***  
+*OUTPUT*: [155, 180]
 Get last set pwm values
 
 * **$DEBUG=1***  
+*OUTPUT*: Debug set to 1
 Enable debug mode  
 If enabled, prints debug info every second to the communication connection
 
 * **$DEBUG=0***  
+*OUTPUT*: Debug set to 0
 Disable debug mode
 
 * **$PERF?***  
+*OUTPUT*: Performance = 1850
 Get performance counter value.  
 This value means how many loops the program runs in one second.
