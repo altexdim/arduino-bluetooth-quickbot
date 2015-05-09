@@ -1,5 +1,5 @@
 /**
- * Class for receiving encoders velocity.
+ * Class for receiving encoders velocity command.
  *
  * Returns current encoders velocity
  * for left and right encoders respectively.
