@@ -56,37 +56,37 @@ Credits and links
 Commands
 ----------------------------------
 
-* $CHECK*  
+* **$CHECK\***  
 Check (ping)
 
-* $RESET*  
+* **$RESET\***  
 Reset counter
 
-* $IRVAL?*  
+* **$IRVAL?\***  
 Get IR sensor values
 
-* $ENVAL?*  
+* **$ENVAL?\***  
 Get encoders values
 
-* $ENVEL?*  
+* **$ENVEL?\***  
 Get encoders velocities
 
-* $PWM=0,0*  
+* **$PWM=0,0\***  
 Stops motors
 
-* $PWM=X,Y*  
+* **$PWM=X,Y\***  
 Set pwm values to motors drivers
 
-* $PWM?*  
+* **$PWM?\***  
 Get last set pwm values
 
-* $DEBUG=1*  
+* **$DEBUG=1\***  
 Enable debug mode  
 If enabled, prints debug info every second to the communication connection
 
-* $DEBUG=0*  
+* **$DEBUG=0\***  
 Disable debug mode
 
-* $PERF?*  
+* **$PERF?\***  
 Get performance counter value.  
 This value means how many loops the program runs in one second.
