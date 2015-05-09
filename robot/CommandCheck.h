@@ -1,3 +1,13 @@
+/**
+ * Class for Check command.
+ *
+ * Is been used for ping.
+ *
+ * COMMAND: $CHECK?*
+ * OUTPUT FORMAT: <string>
+ * OUTPUT EXAMPLE: Hello from QuickBot
+ */
+
 #ifndef COMMANDCHECK_H
 #define COMMANDCHECK_H
 

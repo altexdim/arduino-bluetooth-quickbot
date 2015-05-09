@@ -1,3 +1,13 @@
+/**
+ * Class for disable debug mode command.
+ *
+ * Is been used for disabling debug output.
+ *
+ * COMMAND: $DEBUG=0*
+ * OUTPUT FORMAT: <string>
+ * OUTPUT: Debug set to 0
+ */
+
 #ifndef COMMANDDEBUGDISABLE_H
 #define COMMANDDEBUGDISABLE_H
 

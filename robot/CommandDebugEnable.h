@@ -1,3 +1,13 @@
+/**
+ * Class for enable debug mode command.
+ *
+ * Is been used for enabling debug output.
+ *
+ * COMMAND: $DEBUG=1*
+ * OUTPUT FORMAT: <string>
+ * OUTPUT: Debug set to 1
+ */
+
 #ifndef COMMANDDEBUGENABLE_H
 #define COMMANDDEBUGENABLE_H
 

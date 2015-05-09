@@ -29,6 +29,9 @@ public:
         Encoder *encoders,
         Motor *motors
     );
+    /**
+     * Update both encoders.
+     */
     void updateEncoders();
     /**
      * Resets encoders to 0.
@@ -40,6 +43,11 @@ public:
     void stop();
     /**
      * Starts motors and sets encoders direction
+     *
+     * Negative value means backward direction.
+     *
+     * @param int leftPwm - PWM value to set to the left motor.
+     * @param int rightPwm - PWM value to set to the right motor.
      */
     void drive(int leftPwm, int rightPwm);
     /**
