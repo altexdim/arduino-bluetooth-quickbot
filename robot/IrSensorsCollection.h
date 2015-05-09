@@ -41,7 +41,17 @@ public:
      * Updates value of the next sensor if array.
      */
     void update();
+    /**
+     * Returns the number of the sensors in collection
+     *
+     * @return int count - Number of sensors
+     */
     unsigned int count();
+    /**
+     * Returns sensors array
+     *
+     * @return IrSensors
+     */
     IrSensor *getSensors();
 };
 
