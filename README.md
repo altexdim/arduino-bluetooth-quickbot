@@ -56,3 +56,41 @@ Credits and links
 
 * Android Bluetooth Joystick application:  
     https://github.com/altexdim/android-bluetooth-joystick
+
+Commands
+----------------------------------
+
+* $CHECK*  
+Check (ping)
+
+* $RESET*  
+Reset counter
+
+* $IRVAL?*  
+Get IR sensor values
+
+* $ENVAL?*  
+Get encoders values
+
+* $ENVEL?*  
+Get encoders velocities
+
+* $PWM=0,0*  
+Stops motors
+
+* $PWM=X,Y*  
+Set pwm values to motors drivers
+
+* $PWM?*  
+Get last set pwm values
+
+* $DEBUG=1*  
+Enable debug mode  
+If enabled, prints debug info every second to the communication connection
+
+* $DEBUG=0*  
+Disable debug mode
+
+* $PERF?*  
+Get performance counter value.  
+This value means how many loops the program runs in one second.
