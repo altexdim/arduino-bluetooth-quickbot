@@ -1,5 +1,5 @@
 /**
- * Class for receiving performance counter value command.
+ * Class for command: receive performance counter value.
  *
  * Returns current value of the performance counter.
  *

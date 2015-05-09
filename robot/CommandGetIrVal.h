@@ -1,5 +1,5 @@
 /**
- * Class for receiving infrared sensors values command.
+ * Class for command: receive infrared sensors value.
  *
  * Returns current value
  * for all five sensors.

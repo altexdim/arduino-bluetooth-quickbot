@@ -1,5 +1,5 @@
 /**
- * Class for Check command.
+ * Class for command: Check (Ping).
  *
  * Is been used for ping.
  *

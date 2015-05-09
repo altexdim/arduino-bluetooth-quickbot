@@ -1,3 +1,12 @@
+/**
+ * Class for command: stop motors.
+ *
+ * Makes motors stop.
+ *
+ * COMMAND: $PWM=0,0*
+ * OUTPUT FORMAT: None
+ */
+
 #ifndef COMMANDSTOP_H
 #define COMMANDSTOP_H
 

@@ -1,5 +1,5 @@
 /**
- * Class for enable debug mode command.
+ * Class for command: enable debug mode.
  *
  * Is been used for enabling debug output.
  *

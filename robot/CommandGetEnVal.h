@@ -1,5 +1,5 @@
 /**
- * Class for receiving encoders value command.
+ * Class for command: receive encoders value.
  *
  * Returns current encoders value
  * for left and right encoders respectively.

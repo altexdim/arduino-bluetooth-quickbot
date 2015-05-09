@@ -16,6 +16,7 @@
 
 class CommandProcessor {
 private:
+    // Array of the available commands.
     Command **_commands;
     // Input string buffer
     String _inputBuffer;
@@ -25,9 +26,9 @@ private:
     Stream &_stream;
 
     /**
-     * Parse and execute command.
+     * Parse input buffer and detect command.
      *
-     * Used for commands dispatching.
+     * @return COMMAND - Returns detected command. Returns COMMAND_UNKNOWN if failed.
      */
     COMMAND _decodeCommand();
 
@@ -35,11 +36,8 @@ public:
     /**
      * Constructor
      *
+     * @param Command commands - Array of commands (pointer to array of pointers of objects with Command interface).
      * @param Strem stream - Input and output stream.
-     * @param Chassis chassis - Robot chassis with encoders and motors.
-     * @param IrSensorsCollection sensorsCollection - IR sensors collection.
-     * @param int debug - Debug mode flag
-     * @param long perf - Performance counter
      */
     CommandProcessor(
         Command **commands,

@@ -1,5 +1,5 @@
 /**
- * Class for disable debug mode command.
+ * Class for command: disable debug mode.
  *
  * Is been used for disabling debug output.
  *

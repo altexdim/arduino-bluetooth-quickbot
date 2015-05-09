@@ -27,7 +27,9 @@ void Debugger::update() {
 
     if (timeBetweenUpdates > DEBUGGER_MIN_DELAY_BETWEEN_UPDATE_MS) {
         _lastUpdateTime = currentTime;
-        printDebugInfo();
+
+        // Print debug info once in a second
+        _printDebugInfo();
     }
 }
 
@@ -39,27 +41,27 @@ void Debugger::setDebugMode(long debugMode) {
     _debugMode = debugMode;
 }
 
-void Debugger::printDebugInfo() {
-    if (_debugMode & 1) {
-        Serial.print("left=");
-        Serial.print(_encoders[WHEEL_LEFT].getCounter());
-        Serial.print(" right=");
-        Serial.print(_encoders[WHEEL_RIGHT].getCounter());
-        Serial.print(" loops=");
-        Serial.print(_performanceCounter.getPerformanceValue());
-        Serial.print(" l_vel=");
-        Serial.print(_encoders[WHEEL_LEFT].getVelocity());
-        Serial.print(" r_vel=");
-        Serial.print(_encoders[WHEEL_RIGHT].getVelocity());
+void Debugger::_printDebugInfo() {
+    if (_debugMode & DEBUGGER_DEBUG_MODE_NORMAL_BIT) {
+        _stream.print("left=");
+        _stream.print(_encoders[WHEEL_LEFT].getCounter());
+        _stream.print(" right=");
+        _stream.print(_encoders[WHEEL_RIGHT].getCounter());
+        _stream.print(" loops=");
+        _stream.print(_performanceCounter.getPerformanceValue());
+        _stream.print(" l_vel=");
+        _stream.print(_encoders[WHEEL_LEFT].getVelocity());
+        _stream.print(" r_vel=");
+        _stream.print(_encoders[WHEEL_RIGHT].getVelocity());
 
         IrSensor *sensors = _sensorsCollection.getSensors();
         unsigned int count = _sensorsCollection.count();
         for (int i = 0; i < count; i++) {
-            Serial.print("\tS");
-            Serial.print(i);
-            Serial.print("=");
-            Serial.print(sensors[i].getDistance());
+            _stream.print("\tS");
+            _stream.print(i);
+            _stream.print("=");
+            _stream.print(sensors[i].getDistance());
         }
-        Serial.println();
+        _stream.println();
     }
 }

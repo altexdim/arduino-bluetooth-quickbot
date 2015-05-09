@@ -1,3 +1,13 @@
+/**
+ * Class for command: reset encoders value and velocity.
+ *
+ * Resets encoder value and velocity to zero.
+ *
+ * COMMAND: $RESET*
+ * OUTPUT EXAMPLE: Encoder values reset to [0, 0]
+ * OUTPUT FORMAT: <string>
+ */
+
 #ifndef COMMANDRESET_H
 #define COMMANDRESET_H
 
