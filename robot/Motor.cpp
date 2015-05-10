@@ -27,14 +27,15 @@ void Motor::drive(int spd) {
     }
 
     _pwm = spd;
+    int pwmValue = (int)map(_pwm, -MOTOR_PWM_MAX_VALUE, MOTOR_PWM_MAX_VALUE, -PORT_PWM_MAX_VALUE, PORT_PWM_MAX_VALUE);
     if (_pwm < 0) {
         digitalWrite(_pinEn1, LOW);
         digitalWrite(_pinEn2, HIGH);
-        analogWrite(_pinPwm, -_pwm);
+        analogWrite(_pinPwm, -pwmValue);
     } else {
         digitalWrite(_pinEn1, HIGH);
         digitalWrite(_pinEn2, LOW);
-        analogWrite(_pinPwm, _pwm);
+        analogWrite(_pinPwm, pwmValue);
     }
 }
 

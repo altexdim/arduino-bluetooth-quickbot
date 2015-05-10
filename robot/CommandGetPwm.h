@@ -2,10 +2,10 @@
  * Class for command: get pwm value from the motor drivers.
  *
  * Receives last set pwm values.
- * Correct values are from -255 to 255.
+ * Correct values are from -100 to 100.
  *
  * COMMAND: $PWM?*
- * OUTPUT EXAMPLE: [155, 180]
+ * OUTPUT EXAMPLE: [55, 80]
  * OUTPUT FORMAT: [<int:left motor pwm value>, <int:right motor pwm value>]
  */
 

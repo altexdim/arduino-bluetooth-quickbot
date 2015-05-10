@@ -2,9 +2,9 @@
  * Class for command: set pwm value to the motor drivers.
  *
  * Makes motors move.
- * Valid values are from -255 to 255.
+ * Valid values are from -100 to 100.
  *
- * COMMAND: $PWM=123,234*
+ * COMMAND: $PWM=12,23*
  * INPUT FORMAT: $PWM=<int:left motor pwm value>,<int:right motor pwm value>*
  * OUTPUT FORMAT: None
  */
