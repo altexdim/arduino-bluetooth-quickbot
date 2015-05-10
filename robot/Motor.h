@@ -13,7 +13,7 @@
 // Maximum PWM value to use in arguments of drive() method.
 #define MOTOR_PWM_MAX_VALUE 100
 // Internal maximum PWM value to use in analorWrite() function.
-#define PORT_PWM_MAX_VALUE 255
+#define MOTOR_PORT_PWM_MAX_VALUE 255
 
 class Motor {
 private:

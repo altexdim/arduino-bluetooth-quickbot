@@ -27,7 +27,7 @@ void Motor::drive(int spd) {
     }
 
     _pwm = spd;
-    int pwmValue = (int)map(_pwm, -MOTOR_PWM_MAX_VALUE, MOTOR_PWM_MAX_VALUE, -PORT_PWM_MAX_VALUE, PORT_PWM_MAX_VALUE);
+    int pwmValue = (int)map(_pwm, -MOTOR_PWM_MAX_VALUE, MOTOR_PWM_MAX_VALUE, -MOTOR_PORT_PWM_MAX_VALUE, MOTOR_PORT_PWM_MAX_VALUE);
     if (_pwm < 0) {
         digitalWrite(_pinEn1, LOW);
         digitalWrite(_pinEn2, HIGH);
