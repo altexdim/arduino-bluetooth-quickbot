@@ -12,9 +12,10 @@
 // Used for max ulong value
 #include "limits.h"
 
-// Minimum period of time in microseconds to wait between two mesurements for same one sensor in a group
+// Minimum period of time in microseconds to wait between two measurements for same one sensor in a group
 // Not depended on the number of sensors. You can think of this value as expiration time of each sensor reading.
-#define IR_SENSORS_COLLECTION_SAME_SENSOR_REFRESH_PERIOD_US 1000
+// According to datasheet it takes up to 21ms to do new measurement
+#define IR_SENSORS_COLLECTION_SAME_SENSOR_REFRESH_PERIOD_US 21000
 
 class IrSensorsCollection {
 private:

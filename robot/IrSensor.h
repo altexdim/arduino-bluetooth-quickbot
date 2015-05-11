@@ -13,10 +13,14 @@
 // Used for analogRead() functions
 #include <Arduino.h>
 
-// Input buffer size. Must be greater or equal to IR_SENSOR_AVG_FILTER_READINGS_COUNT.
-#define IR_SENSOR_READ_BUFFER_SIZE 5
 // Number of reading to calculate average value.
-#define IR_SENSOR_AVG_FILTER_READINGS_COUNT 3
+#define IR_SENSOR_AVG_FILTER_READINGS_COUNT 25
+// Input buffer size. Must be greater or equal to IR_SENSOR_AVG_FILTER_READINGS_COUNT.
+// In must be greate than IR_SENSOR_AVG_FILTER_READINGS_COUNT by 2 at lease
+// 1 is for delete last value, and 2 for delete last diff value when calculating summs and avgs.
+#define IR_SENSOR_READ_BUFFER_SIZE (IR_SENSOR_AVG_FILTER_READINGS_COUNT + 2)
+// Maximum allowed noise to signal ratio in percent
+#define IR_SENSOR_MAX_NOISE 20
 
 class IrSensor {
 private:
@@ -26,8 +30,14 @@ private:
     unsigned int _currentBufferIndex;
     // Input buffer to store analog readings.
     int _valuesRaw[IR_SENSOR_READ_BUFFER_SIZE];
-    // Calculated average value.
+    // Calculated sum value (is needed for calculating avg value).
+    long _valueSum;
+    // Calculated sum diff (is needed for calculating noise to signal ratio).
+    long _diffSum;
+    // Calculated avg value (output signal).
     int _value;
+    // Calculated noise to signal value.
+    int _diffPerc;
 public:
     /**
      * Constructor
@@ -48,6 +58,8 @@ public:
      *
      * Uses average value between
      * last number of readings.
+     *
+     * @return int - Signal output. "0" if signal is unstable.
      */
     int getDistance();
 };
