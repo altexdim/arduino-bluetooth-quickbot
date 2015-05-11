@@ -15,7 +15,7 @@
 // Minimum period of time in microseconds to wait between two measurements for same one sensor in a group
 // Not depended on the number of sensors. You can think of this value as expiration time of each sensor reading.
 // According to datasheet it takes up to 21ms to do new measurement
-#define IR_SENSORS_COLLECTION_SAME_SENSOR_REFRESH_PERIOD_US 21000
+#define IR_SENSORS_COLLECTION_SAME_SENSOR_REFRESH_PERIOD_US 10000
 
 class IrSensorsCollection {
 private:
