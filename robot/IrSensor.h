@@ -20,7 +20,7 @@
 // 1 is for delete last value, and 2 for delete last diff value when calculating summs and avgs.
 #define IR_SENSOR_READ_BUFFER_SIZE (IR_SENSOR_AVG_FILTER_READINGS_COUNT + 2)
 // Maximum allowed noise to signal ratio in percent
-#define IR_SENSOR_MAX_NOISE 20
+#define IR_SENSOR_MAX_NOISE 15
 
 class IrSensor {
 private:
