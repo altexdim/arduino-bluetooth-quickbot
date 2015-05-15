@@ -46,10 +46,6 @@
  *
  * ==============================================================================================
  *
- * Issues:
- *      1) How to put all commands files into subdirectory? Cmake does not compile them.
- *      The only workaround is to #include both .h and .cpp files, but that's not i want.
- *
  * Possible ways of optimization:
  *      1) Combine performance counter and debugger into one class.
  *      2) Get rid of command classes in respect of functions.
@@ -67,18 +63,18 @@
 #include "PerformanceCounter.h"
 #include "Debugger.h"
 #include "CommandProcessor.h"
-#include "CommandCheck.h"
-#include "CommandReset.h"
-#include "CommandUnknown.h"
-#include "CommandGetIrVal.h"
-#include "CommandGetEnVal.h"
-#include "CommandGetEnVel.h"
-#include "CommandStop.h"
-#include "CommandSetPwm.h"
-#include "CommandGetPwm.h"
-#include "CommandDebugEnable.h"
-#include "CommandDebugDisable.h"
-#include "CommandGetPerf.h"
+#include "commands/CommandCheck.h"
+#include "commands/CommandReset.h"
+#include "commands/CommandUnknown.h"
+#include "commands/CommandGetIrVal.h"
+#include "commands/CommandGetEnVal.h"
+#include "commands/CommandGetEnVel.h"
+#include "commands/CommandStop.h"
+#include "commands/CommandSetPwm.h"
+#include "commands/CommandGetPwm.h"
+#include "commands/CommandDebugEnable.h"
+#include "commands/CommandDebugDisable.h"
+#include "commands/CommandGetPerf.h"
 
 // Encoders
 Encoder encoders[WHEEL_COUNT] = {

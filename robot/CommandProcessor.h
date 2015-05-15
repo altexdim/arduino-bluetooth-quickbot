@@ -10,7 +10,7 @@
 #ifndef COMMANDPROCESSOR_H
 #define COMMANDPROCESSOR_H
 
-#include "Command.h"
+#include "commands/Command.h"
 #include "Arduino.h"
 #include "Types.h"
 
