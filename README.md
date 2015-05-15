@@ -80,12 +80,12 @@ Get encoders velocities
 *OUTPUT*: None  
 Stops motors
 
-* **$PWM=123,234***  
+* **$PWM=12,23***  
 *OUTPUT*: None  
 Set pwm values to motors drivers
 
 * **$PWM?***  
-*OUTPUT*: [155, 180]  
+*OUTPUT*: [55, 80]  
 Get last set pwm values
 
 * **$DEBUG=1***  

@@ -21,7 +21,7 @@
 #include "IrSensorsCollection.h"
 
 // How often print debug info, 1000 means one time in a second
-#define DEBUGGER_MIN_DELAY_BETWEEN_UPDATE_MS 1000
+#define DEBUGGER_MIN_DELAY_BETWEEN_UPDATE_MS 100
 // Enable bit for normal debug mode
 #define DEBUGGER_DEBUG_MODE_NORMAL_BIT 1
 

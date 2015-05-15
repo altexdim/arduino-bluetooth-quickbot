@@ -75,7 +75,8 @@ void CommandProcessor::readCommand() {
             COMMAND decodedCommand = _decodeCommand();
             int result = _commands[decodedCommand]->execute(_inputBuffer, _outputBuffer);
             if (result) {
-                _stream.println(_outputBuffer);
+                _outputBuffer.concat("\n");
+                _stream.print(_outputBuffer);
             }
             continue;
         }
